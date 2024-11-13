@@ -5,6 +5,14 @@ import postgres from "postgres";
 import { z } from "zod";
 
 import { sessionTable, userTable } from "./db/schemas/auth";
+import { commentsRelations, commentsTable } from "./db/schemas/comments";
+import { postsRelations, postsTable } from "./db/schemas/posts";
+import {
+  commentUpvotesRelations,
+  commentUpvotesTable,
+  postUpvotesRelations,
+  postUpvotesTable,
+} from "./db/schemas/upvotes";
 
 const EnvSchema = z.object({
   DATABASE_URL: z.string().url(),
@@ -17,6 +25,14 @@ export const db = drizzle(queryClient, {
   schema: {
     user: userTable,
     session: sessionTable,
+    posts: postsTable,
+    postsRelations,
+    comments: commentsTable,
+    commentsRelations,
+    postUpvotes: postUpvotesTable,
+    postUpvotesRelations,
+    commentUpvotes: commentUpvotesTable,
+    commentUpvotesRelations,
   },
 });
 

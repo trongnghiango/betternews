@@ -1,0 +1,30 @@
+### Create post with valid data
+POST http://localhost:3000/api/posts
+Content-Type: application/x-www-form-urlencoded
+
+title=OpenCoder: Open Cookbook for Top-Tier Code Large Language Models
+&url=https://opencoder-llm.github.io/
+
+### Create post with invalid data
+POST http://localhost:3000/api/posts
+Content-Type: application/x-www-form-urlencoded
+
+title=Multiple new macOS sandbox escape vulnerabilities
+
+### Add comment to existing post
+POST http://localhost:3000/api/posts/1/comment
+Content-Type: application/x-www-form-urlencoded
+
+content=Interesting!
+
+### Get all posts
+GET http://localhost:3000/api/posts
+
+### Get single post
+GET http://localhost:3000/api/posts/1
+
+### Get post comments
+GET http://localhost:3000/api/posts/1/comments
+
+### Upvote post
+PATCH http://localhost:3000/api/posts/1/upvote

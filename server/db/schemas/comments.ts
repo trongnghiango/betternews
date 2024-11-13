@@ -1,6 +1,9 @@
 import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+
 import { userTable } from "./auth";
 import { postsTable } from "./posts";
 import { commentUpvotesTable } from "./upvotes";
@@ -17,6 +20,12 @@ export const commentsTable = pgTable("comments", {
   depth: integer("depth").default(0).notNull(),
   commentCount: integer("comment_count").default(0).notNull(),
   points: integer("points").default(0).notNull(),
+});
+
+export const InsertCommentSchema = createInsertSchema(commentsTable, {
+  content: z
+    .string()
+    .min(3, { message: "Content must be at least 3 characters long" }),
 });
 
 export const commentsRelations = relations(commentsTable, ({ one, many }) => ({
