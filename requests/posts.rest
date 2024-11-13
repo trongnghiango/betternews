@@ -24,7 +24,7 @@ GET http://localhost:3000/api/posts
 GET http://localhost:3000/api/posts/1
 
 ### Get post comments
-GET http://localhost:3000/api/posts/1/comments
+GET http://localhost:3000/api/posts/1/comments?includeChildren=true
 
 ### Upvote post
 PATCH http://localhost:3000/api/posts/1/upvote
