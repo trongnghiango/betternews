@@ -8,6 +8,7 @@ import pluginJs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import pluginReact from "eslint-plugin-react";
+import pluginReactHooks from "eslint-plugin-react-hooks";
 import tailwind from "eslint-plugin-tailwindcss";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -30,9 +31,15 @@ export default [
   ...tailwind.configs["flat/recommended"],
   eslintConfigPrettier,
   {
+    plugins: {
+      "react-hooks": pluginReactHooks,
+    },
+    rules: pluginReactHooks.configs.recommended.rules,
+  },
+  {
     settings: {
       tailwindcss: {
-        config: "tailwind.config.js",
+        config: "tailwind.config.ts",
         callees: ["cn", "cva"],
       },
     },

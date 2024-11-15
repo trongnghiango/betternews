@@ -7,6 +7,10 @@ import { routeTree } from "./routeTree.gen";
 
 import "./globals.css";
 
+import { DefaultError } from "./components/default-error";
+import { DefaultNotFound } from "./components/default-not-found";
+import { DefaultPending } from "./components/default-pending";
+
 // Set up a Query client instance
 const queryClient = new QueryClient();
 
@@ -18,6 +22,9 @@ const router = createRouter({
   context: {
     queryClient,
   },
+  defaultPendingComponent: DefaultPending,
+  defaultNotFoundComponent: DefaultNotFound,
+  defaultErrorComponent: DefaultError,
 });
 
 // Register things for typesafety
