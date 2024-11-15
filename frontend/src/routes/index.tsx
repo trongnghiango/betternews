@@ -5,7 +5,6 @@ export const Route = createFileRoute("/")({
 });
 
 function HomeComponent() {
-  throw new Error("Testing error component");
   return (
     <div className="p-2">
       <h3>Welcome Home!</h3>
