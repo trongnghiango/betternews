@@ -13,7 +13,7 @@ username=mzelinka
 &password=123456
 
 ### Sign out
-POST http://localhost:3000/api/auth/logout
+GET http://localhost:3000/api/auth/logout
 
 ### Get logged-in user
 GET http://localhost:3000/api/auth/user

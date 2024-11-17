@@ -12,7 +12,7 @@
     "@lucia-auth/adapter-drizzle": "^1.1.0",
     "drizzle-orm": "^0.36.1",
     "drizzle-zod": "^0.5.1",
-    "hono": "^4.6.9",
+    "hono": "4.6.3",
     "lucia": "^3.2.2",
     "postgres": "^3.4.5",
     "zod": "^3.23.8"
