@@ -29,7 +29,9 @@ export function SiteHeader() {
           <nav className="flex items-center gap-4 max-md:hidden">
             <Link className="hover:underline">New</Link>
             <Link className="hover:underline">Top</Link>
-            <Link className="hover:underline">Submit</Link>
+            <Link to="/submit" className="hover:underline">
+              Submit
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-4 max-md:hidden">

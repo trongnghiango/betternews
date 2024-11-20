@@ -53,11 +53,12 @@ export function PostCard({
               <Link
                 to="/"
                 search={{ site: post.url }}
-                className={badgeVariants({
-                  variant: "secondary",
-                  className:
-                    "cursor-pointer text-xs font-normal transition-colors hover:bg-primary/80 hover:underline",
-                })}
+                className={cn(
+                  badgeVariants({
+                    variant: "secondary",
+                  }),
+                  "cursor-pointer text-xs font-normal transition-colors hover:bg-primary/80 hover:underline",
+                )}
               >
                 {new URL(post.url).hostname}
               </Link>

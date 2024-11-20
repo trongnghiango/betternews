@@ -1,19 +1,12 @@
-import {
-  createFileRoute,
-  Link,
-  redirect,
-  useRouter,
-} from "@tanstack/react-router";
+import { createFileRoute, useBlocker, useRouter } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { fallback, zodSearchValidator } from "@tanstack/router-zod-adapter";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 
 import { toast } from "sonner";
-import { z } from "zod";
 
-import { LoginSchema } from "@/shared/types";
-import { login, userQueryOptions } from "@/lib/api";
+import { CreatePostSchema } from "@/shared/types";
+import { createPost } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,52 +17,42 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { FieldInfo } from "@/components/field-info";
 
-const LoginSearchSchema = z.object({
-  redirect: fallback(z.string(), "/").default("/"),
+export const Route = createFileRoute("/_auth/submit")({
+  component: Submit,
 });
 
-export const Route = createFileRoute("/login")({
-  component: Login,
-  validateSearch: zodSearchValidator(LoginSearchSchema),
-  beforeLoad: async ({ context, search }) => {
-    const user = await context.queryClient.ensureQueryData(userQueryOptions());
-    if (user) {
-      throw redirect({ to: search.redirect });
-    }
-  },
-});
-
-function Login() {
+function Submit() {
   const queryClient = useQueryClient();
 
   const router = useRouter();
 
   const navigate = Route.useNavigate();
-  const search = Route.useSearch();
 
   const form = useForm({
     defaultValues: {
-      username: "",
-      password: "",
+      title: "",
+      url: "",
+      content: "",
     },
     validatorAdapter: zodValidator(),
     validators: {
-      onChange: LoginSchema,
+      onChange: CreatePostSchema,
     },
     onSubmit: async ({ value }) => {
-      const { username, password } = value;
+      const { title, url, content } = value;
 
-      const res = await login(username, password);
+      const res = await createPost(title, url, content);
       if (res.success) {
-        await queryClient.invalidateQueries({ queryKey: ["user"] });
+        await queryClient.invalidateQueries({ queryKey: ["posts"] });
         await router.invalidate();
 
-        await navigate({ to: search.redirect });
+        await navigate({ to: "/post", search: { postId: res.data.postId } });
       } else {
         if (!res.isFormError) {
-          toast.error("Failed to log in", {
+          toast.error("Failed to create post", {
             description: res.error,
           });
         }
@@ -81,8 +64,16 @@ function Login() {
     },
   });
 
+  const shouldBlock = form.useStore(
+    (state) => state.isDirty && !state.isSubmitting,
+  );
+  useBlocker({
+    condition: shouldBlock,
+    blockerFn: () => window.confirm("Are you sure you want to leave?"),
+  });
+
   return (
-    <Card className="mx-auto mt-12 max-w-sm border-border/25">
+    <Card className="mx-auto mt-12 max-w-lg border-border/25">
       <form
         onSubmit={async (e) => {
           e.preventDefault();
@@ -91,17 +82,19 @@ function Login() {
         }}
       >
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle>Create New Post</CardTitle>
           <CardDescription>
-            Enter your information to login to your account.
+            Leave url blank to submit a question for discussion. If there is no
+            url, text will appear at the top of the thread. If there is a url,
+            text is optional.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
-            <form.Field name="username">
+            <form.Field name="title">
               {(field) => (
                 <div className="grid gap-2">
-                  <Label htmlFor={field.name}>Username</Label>
+                  <Label htmlFor={field.name}>Title</Label>
                   <Input
                     type="text"
                     id={field.name}
@@ -114,12 +107,27 @@ function Login() {
                 </div>
               )}
             </form.Field>
-            <form.Field name="password">
+            <form.Field name="url">
               {(field) => (
                 <div className="grid gap-2">
-                  <Label htmlFor={field.name}>Password</Label>
+                  <Label htmlFor={field.name}>URL</Label>
                   <Input
-                    type="password"
+                    type="url"
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(event) => field.handleChange(event.target.value)}
+                  />
+                  <FieldInfo field={field} />
+                </div>
+              )}
+            </form.Field>
+            <form.Field name="content">
+              {(field) => (
+                <div className="grid gap-2">
+                  <Label htmlFor={field.name}>Content</Label>
+                  <Textarea
                     id={field.name}
                     name={field.name}
                     value={field.state.value}
@@ -147,16 +155,10 @@ function Login() {
                   disabled={!canSubmit || isSubmitting}
                   className="w-full"
                 >
-                  {isSubmitting ? "Logging in…" : "Login"}
+                  {isSubmitting ? "Submitting…" : "Submit"}
                 </Button>
               )}
             </form.Subscribe>
-          </div>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link to="/signup" search={search} className="underline">
-              Sign up
-            </Link>
           </div>
         </CardContent>
       </form>

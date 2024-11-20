@@ -1,10 +1,10 @@
-import * as React from "react";
+import { forwardRef, type HTMLAttributes } from "react";
 
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-const alertVariants = cva(
+export const alertVariants = cva(
   "relative w-full rounded-lg border px-4 py-3 text-sm [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground [&>svg~*]:pl-7",
   {
     variants: {
@@ -20,9 +20,9 @@ const alertVariants = cva(
   },
 );
 
-const Alert = React.forwardRef<
+export const Alert = forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
+  HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
 >(({ className, variant, ...props }, ref) => (
   <div
     ref={ref}
@@ -33,9 +33,9 @@ const Alert = React.forwardRef<
 ));
 Alert.displayName = "Alert";
 
-const AlertTitle = React.forwardRef<
+export const AlertTitle = forwardRef<
   HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
+  HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
   // eslint-disable-next-line jsx-a11y/heading-has-content
   <h5
@@ -46,9 +46,9 @@ const AlertTitle = React.forwardRef<
 ));
 AlertTitle.displayName = "AlertTitle";
 
-const AlertDescription = React.forwardRef<
+export const AlertDescription = forwardRef<
   HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
+  HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -57,5 +57,3 @@ const AlertDescription = React.forwardRef<
   />
 ));
 AlertDescription.displayName = "AlertDescription";
-
-export { Alert, AlertTitle, AlertDescription };

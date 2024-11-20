@@ -11,7 +11,7 @@ const client = hc<ApiRoutes>("/", {
     }),
 }).api;
 
-export async function postSignup(username: string, password: string) {
+export async function signup(username: string, password: string) {
   try {
     const res = await client.auth.signup.$post({
       form: {
@@ -34,7 +34,7 @@ export async function postSignup(username: string, password: string) {
   }
 }
 
-export async function postLogin(username: string, password: string) {
+export async function login(username: string, password: string) {
   try {
     const res = await client.auth.login.$post({
       form: {
@@ -117,4 +117,28 @@ export async function upvotePost(id: string) {
   }
 
   return await res.json();
+}
+
+export async function createPost(title: string, url: string, content: string) {
+  try {
+    const res = await client.posts.$post({
+      form: {
+        title,
+        url,
+        content,
+      },
+    });
+    if (!res.ok) {
+      const data = (await res.json()) as unknown as ErrorResponse;
+      return data;
+    }
+
+    return await res.json();
+  } catch (error) {
+    return {
+      success: false,
+      error: String(error),
+      isFormError: false,
+    } satisfies ErrorResponse;
+  }
 }

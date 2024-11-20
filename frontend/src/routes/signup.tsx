@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { LoginSchema } from "@/shared/types";
-import { postSignup, userQueryOptions } from "@/lib/api";
+import { signup, userQueryOptions } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -42,8 +42,10 @@ export const Route = createFileRoute("/signup")({
 });
 
 function Signup() {
-  const router = useRouter();
   const queryClient = useQueryClient();
+
+  const router = useRouter();
+
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
 
@@ -59,10 +61,11 @@ function Signup() {
     onSubmit: async ({ value }) => {
       const { username, password } = value;
 
-      const res = await postSignup(username, password);
+      const res = await signup(username, password);
       if (res.success) {
         await queryClient.invalidateQueries({ queryKey: ["user"] });
         await router.invalidate();
+
         await navigate({ to: search.redirect });
       } else {
         if (!res.isFormError) {
@@ -90,7 +93,7 @@ function Signup() {
         <CardHeader>
           <CardTitle className="text-2xl">Sign Up</CardTitle>
           <CardDescription>
-            Enter your information to create an account
+            Enter your information to create an account.
           </CardDescription>
         </CardHeader>
         <CardContent>
