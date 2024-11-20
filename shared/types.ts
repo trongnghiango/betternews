@@ -89,8 +89,10 @@ export const CreatePostSchema = InsertPostSchema.pick({
 
 export const CreateCommentSchema = InsertCommentSchema.pick({ content: true });
 
+export type SortBy = z.infer<typeof SortBySchema>;
 export const SortBySchema = z.enum(["points", "recent"]);
 
+export type OrderBy = z.infer<typeof OrderBySchema>;
 export const OrderBySchema = z.enum(["asc", "desc"]);
 
 export const PaginationSchema = z.object({

@@ -5,12 +5,12 @@ Content-Type: application/x-www-form-urlencoded
 username=mzelinka
 &password=123456
 
-### Sign in
+### Login
 POST http://localhost:3000/api/auth/login
 Content-Type: application/x-www-form-urlencoded
 
-username=mzelinka
-&password=123456
+username=ryan
+&password=ryaniscool
 
 ### Sign out
 GET http://localhost:3000/api/auth/logout

@@ -1,7 +1,7 @@
-import { hc } from "hono/client";
+import { hc, type InferResponseType } from "hono/client";
 import { queryOptions } from "@tanstack/react-query";
 
-import type { ApiRoutes, ErrorResponse } from "@/shared/types";
+import type { ApiRoutes, ErrorResponse, OrderBy, SortBy } from "@/shared/types";
 
 const client = hc<ApiRoutes>("/", {
   fetch: (input: RequestInfo | URL, init?: RequestInit) =>
@@ -73,4 +73,48 @@ export function userQueryOptions() {
     queryFn: getUser,
     staleTime: Infinity,
   });
+}
+
+export type GetPostsSuccessResponse = InferResponseType<
+  typeof client.posts.$get
+>;
+export async function getPosts({
+  pageParam = 1,
+  pagination,
+}: {
+  pageParam: number;
+  pagination: {
+    sortBy?: SortBy;
+    orderBy?: OrderBy;
+    author?: string;
+    site?: string;
+  };
+}) {
+  const res = await client.posts.$get({
+    query: {
+      page: String(pageParam),
+      sortBy: pagination.sortBy,
+      orderBy: pagination.orderBy,
+      author: pagination.author,
+      site: pagination.site,
+    },
+  });
+  if (!res.ok) {
+    const data = (await res.json()) as unknown as ErrorResponse;
+    throw new Error(data.error);
+  }
+
+  return await res.json();
+}
+
+export async function upvotePost(id: string) {
+  const res = await client.posts[":postId"].upvote.$patch({
+    param: { postId: id },
+  });
+  if (!res.ok) {
+    const data = (await res.json()) as unknown as ErrorResponse;
+    throw new Error(data.error);
+  }
+
+  return await res.json();
 }
