@@ -178,7 +178,7 @@ export const commentsRouter = new Hono<Context>()
         const [updated] = await tx
           .update(commentsTable)
           .set({
-            points: sql<number>`${commentsTable.points} + ${pointsChange}`,
+            points: sql`${commentsTable.points} + ${pointsChange}`,
           })
           .where(eq(commentsTable.id, commentId))
           .returning({ points: commentsTable.points });

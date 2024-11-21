@@ -68,7 +68,7 @@ function HomeComponent() {
             <PostCard
               key={post.id}
               post={post}
-              onUpvote={() => upvotePostMutation.mutate(post.id.toString())}
+              onUpvote={() => upvotePostMutation.mutate(String(post.id))}
             />
           )),
         )}

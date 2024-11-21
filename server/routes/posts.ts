@@ -60,7 +60,7 @@ export const postsRouter = new Hono<Context>()
       const [comment] = await db.transaction(async (tx) => {
         const [updated] = await tx
           .update(postsTable)
-          .set({ commentCount: sql<number>`${postsTable.commentCount} + 1` })
+          .set({ commentCount: sql`${postsTable.commentCount} + 1` })
           .where(eq(postsTable.id, postId))
           .returning({ commentCount: postsTable.commentCount });
         if (!updated) {
@@ -130,8 +130,8 @@ export const postsRouter = new Hono<Context>()
           username: userTable.username,
         },
         isUpvoted: user
-          ? sql<boolean>`CASE WHEN ${postUpvotesTable.userId} IS NOT NULL THEN true ELSE false END`
-          : sql<boolean>`false`,
+          ? sql`CASE WHEN ${postUpvotesTable.userId} IS NOT NULL THEN true ELSE false END`
+          : sql`false`,
       })
       .from(postsTable)
       .leftJoin(userTable, eq(postsTable.userId, userTable.id))
@@ -182,6 +182,7 @@ export const postsRouter = new Hono<Context>()
           id: postsTable.id,
           title: postsTable.title,
           url: postsTable.url,
+          content: postsTable.content,
           points: postsTable.points,
           commentCount: postsTable.commentCount,
           createdAt: getISOFormatDateQuery(postsTable.createdAt),
@@ -190,8 +191,8 @@ export const postsRouter = new Hono<Context>()
             username: userTable.username,
           },
           isUpvoted: user
-            ? sql<boolean>`CASE WHEN ${postUpvotesTable.userId} IS NOT NULL THEN true ELSE false END`
-            : sql<boolean>`false`,
+            ? sql`CASE WHEN ${postUpvotesTable.userId} IS NOT NULL THEN true ELSE false END`
+            : sql`false`,
         })
         .from(postsTable)
         .leftJoin(userTable, eq(postsTable.userId, userTable.id))
@@ -352,7 +353,7 @@ export const postsRouter = new Hono<Context>()
 
         const [updated] = await tx
           .update(postsTable)
-          .set({ points: sql<number>`${postsTable.points} + ${pointsChange}` })
+          .set({ points: sql`${postsTable.points} + ${pointsChange}` })
           .where(eq(postsTable.id, postId))
           .returning({ points: postsTable.points });
         if (!updated) {

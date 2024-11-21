@@ -49,7 +49,7 @@ function Submit() {
         await queryClient.invalidateQueries({ queryKey: ["posts"] });
         await router.invalidate();
 
-        await navigate({ to: "/post", search: { postId: res.data.postId } });
+        await navigate({ to: "/post", search: { id: res.data.postId } });
       } else {
         if (!res.isFormError) {
           toast.error("Failed to create post", {

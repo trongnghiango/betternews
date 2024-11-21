@@ -1,4 +1,5 @@
 import { hc, type InferResponseType } from "hono/client";
+import { notFound } from "@tanstack/react-router";
 import { queryOptions } from "@tanstack/react-query";
 
 import type { ApiRoutes, ErrorResponse, OrderBy, SortBy } from "@/shared/types";
@@ -99,6 +100,25 @@ export async function getPosts({
       site: pagination.site,
     },
   });
+  if (!res.ok) {
+    const data = (await res.json()) as unknown as ErrorResponse;
+    throw new Error(data.error);
+  }
+
+  return await res.json();
+}
+
+export async function getPost(id: string) {
+  const res = await client.posts[":postId"].$get({
+    param: {
+      postId: id,
+    },
+  });
+
+  if (res.status === 404) {
+    throw notFound();
+  }
+
   if (!res.ok) {
     const data = (await res.json()) as unknown as ErrorResponse;
     throw new Error(data.error);

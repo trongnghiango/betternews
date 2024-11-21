@@ -42,7 +42,8 @@ export function PostCard({
                 </a>
               ) : (
                 <Link
-                  to="."
+                  to="/post"
+                  search={{ id: post.id }}
                   className="text-foreground hover:text-primary hover:underline"
                 >
                   {post.title}
@@ -83,7 +84,11 @@ export function PostCard({
             <span>&middot;</span>
             <span>{relativeTime(post.createdAt)}</span>
             <span>&middot;</span>
-            <Link to="." className="hover:underline">
+            <Link
+              to="/post"
+              search={{ id: post.id }}
+              className="hover:underline"
+            >
               {post.commentCount} comments
             </Link>
           </div>
