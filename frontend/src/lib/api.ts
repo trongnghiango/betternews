@@ -12,10 +12,6 @@ const client = hc<ApiRoutes>("/", {
     }),
 }).api;
 
-/**
- * Auth API Routes
- */
-
 export async function signup(username: string, password: string) {
   try {
     const res = await client.auth.signup.$post({
@@ -79,10 +75,6 @@ export function userQueryOptions() {
     staleTime: Infinity,
   });
 }
-
-/**
- * Posts API Routes
- */
 
 export async function createPost(title: string, url: string, content: string) {
   try {
@@ -201,9 +193,43 @@ export async function upvotePost(id: string) {
   return await res.json();
 }
 
-/**
- * Comments API Routes
- */
+export async function createComment(
+  id: string,
+  content: string,
+  isNested?: boolean,
+) {
+  try {
+    const res = isNested
+      ? await client.comments[":id"].$post({
+          param: {
+            id,
+          },
+          form: {
+            content,
+          },
+        })
+      : await client.posts[":id"].comment.$post({
+          param: {
+            id,
+          },
+          form: {
+            content,
+          },
+        });
+    if (!res.ok) {
+      const data = (await res.json()) as unknown as ErrorResponse;
+      return data;
+    }
+
+    return await res.json();
+  } catch (error) {
+    return {
+      success: false,
+      error: String(error),
+      isFormError: false,
+    } satisfies ErrorResponse;
+  }
+}
 
 export async function getCommentComments(id: string, page = 1, limit = 2) {
   const res = await client.comments[":id"].comments.$get({

@@ -18,25 +18,27 @@ import { getCommentComments, userQueryOptions } from "@/lib/api";
 import { useUpvoteCommentMutation } from "@/lib/api-hooks";
 import { cn, relativeTime } from "@/lib/utils";
 
+import { CommentForm } from "./comment-form";
 import { Separator } from "./ui/separator";
 
 export function CommentCard({
   comment,
   depth,
   activeReplyId,
-  onReply,
+  onActiveReplyIdChange,
   isLast,
 }: {
   comment: Comment;
   depth: number;
   activeReplyId: number | null;
-  onReply: Dispatch<SetStateAction<number | null>>;
+  onActiveReplyIdChange: Dispatch<SetStateAction<number | null>>;
   isLast: boolean;
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const isUpvoted = comment.commentUpvotes.length > 0;
   const isReplying = activeReplyId === comment.id;
+  const isDraft = comment.id === -1;
 
   const queryClient = useQueryClient();
 
@@ -78,7 +80,12 @@ export function CommentCard({
   const upvoteCommentMutation = useUpvoteCommentMutation();
 
   return (
-    <div className={cn(depth > 0 ? "ml-4 border-l border-border pl-4" : "")}>
+    <div
+      className={cn(
+        depth > 0 ? "ml-4 border-l border-border pl-4" : "",
+        isDraft ? "pointer-events-none opacity-50" : "",
+      )}
+    >
       <div className="py-2">
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <button
@@ -118,13 +125,23 @@ export function CommentCard({
             {user ? (
               <div className="mt-2 grid gap-2">
                 <button
-                  onClick={() => onReply(isReplying ? null : comment.id)}
+                  onClick={() =>
+                    onActiveReplyIdChange(isReplying ? null : comment.id)
+                  }
                   className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
                 >
                   <MessageSquareIcon size={12} />
                   Reply
                 </button>
-                {isReplying ? <div>COMMENT FORM</div> : null}
+                {isReplying ? (
+                  <div className="mt-2">
+                    <CommentForm
+                      id={comment.id}
+                      isParent
+                      onSuccess={() => onActiveReplyIdChange(null)}
+                    />
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </div>
@@ -141,7 +158,7 @@ export function CommentCard({
                 comment={comment}
                 depth={depth + 1}
                 activeReplyId={activeReplyId}
-                onReply={onReply}
+                onActiveReplyIdChange={onActiveReplyIdChange}
                 isLast={isLastPage && index === page.data.length - 1}
               />
             ));
@@ -150,13 +167,13 @@ export function CommentCard({
             <div className="mt-2">
               <button
                 disabled={commentCommentsQueryResult.isFetchingNextPage}
-                onClick={() => {
+                onClick={async () => {
                   if (shouldRefetchFirstPage) {
-                    queryClient.invalidateQueries({
+                    await queryClient.invalidateQueries({
                       queryKey: ["comments", "comment", comment.id],
                     });
                   } else {
-                    commentCommentsQueryResult.fetchNextPage();
+                    await commentCommentsQueryResult.fetchNextPage();
                   }
                 }}
                 className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"

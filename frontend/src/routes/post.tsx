@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   infiniteQueryOptions,
   queryOptions,
+  useQuery,
   useSuspenseInfiniteQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
@@ -12,9 +13,10 @@ import { ChevronDownIcon } from "lucide-react";
 import { z } from "zod";
 
 import { OrderBySchema, SortBySchema } from "@/shared/types";
-import { getPost, getPostComments } from "@/lib/api";
+import { getPost, getPostComments, userQueryOptions } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CommentCard } from "@/components/comment-card";
+import { CommentForm } from "@/components/comment-form";
 import { PostCard } from "@/components/post-card";
 import { SortBar } from "@/components/sort-bar";
 
@@ -41,47 +43,55 @@ function Post() {
   );
   const postComments = postCommentsQueryResult.data;
 
+  const userQueryResult = useQuery(userQueryOptions());
+  const user = userQueryResult.data;
+
   return (
     <div className="mx-auto max-w-3xl">
       <PostCard post={postQueryResult.data.data} />
-      {postComments.pages[0].data.length ? (
-        <Card className="mt-4">
-          <CardHeader>
-            <CardTitle className="text-lg">Comments</CardTitle>
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle className="text-lg">Comments</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {user ? <CommentForm id={id} /> : null}
+          <div className="mt-6">
             <SortBar sortBy={sortBy} orderBy={orderBy} />
-          </CardHeader>
-          <CardContent>
-            {postComments.pages.map((page) =>
-              page.data.map((comment, index) => (
-                <CommentCard
-                  key={comment.id}
-                  comment={comment}
-                  depth={0}
-                  activeReplyId={activeReplyId}
-                  onReply={setActiveReplyId}
-                  isLast={index === page.data.length - 1}
-                />
-              )),
-            )}
-            {postCommentsQueryResult.hasNextPage ? (
-              <div className="mt-2">
-                <button
-                  disabled={postCommentsQueryResult.isFetchingNextPage}
-                  onClick={() => {
-                    postCommentsQueryResult.fetchNextPage();
-                  }}
-                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-                >
-                  <ChevronDownIcon size={12} />
-                  {postCommentsQueryResult.isFetchingNextPage
-                    ? "Loading…"
-                    : "More replies"}
-                </button>
-              </div>
-            ) : null}
-          </CardContent>
-        </Card>
-      ) : null}
+          </div>
+          {postComments.pages[0].data.length > 0 ? (
+            <div className="mt-4">
+              {postComments.pages.map((page) =>
+                page.data.map((comment, index) => (
+                  <CommentCard
+                    key={comment.id}
+                    comment={comment}
+                    depth={0}
+                    activeReplyId={activeReplyId}
+                    onActiveReplyIdChange={setActiveReplyId}
+                    isLast={index === page.data.length - 1}
+                  />
+                )),
+              )}
+            </div>
+          ) : null}
+          {postCommentsQueryResult.hasNextPage ? (
+            <div className="mt-2">
+              <button
+                disabled={postCommentsQueryResult.isFetchingNextPage}
+                onClick={() => {
+                  postCommentsQueryResult.fetchNextPage();
+                }}
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+              >
+                <ChevronDownIcon size={12} />
+                {postCommentsQueryResult.isFetchingNextPage
+                  ? "Loading…"
+                  : "More replies"}
+              </button>
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
     </div>
   );
 }

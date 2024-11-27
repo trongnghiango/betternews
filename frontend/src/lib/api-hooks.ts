@@ -14,7 +14,12 @@ import {
   type SuccessResponseWithPagination,
 } from "@/shared/types";
 
-import { upvoteComment, upvotePost, type GetPostsSuccessResponse } from "./api";
+import {
+  createComment,
+  upvoteComment,
+  upvotePost,
+  type GetPostsSuccessResponse,
+} from "./api";
 
 export function useUpvotePostMutation() {
   const queryClient = useQueryClient();
@@ -154,7 +159,7 @@ export function useUpvoteCommentMutation() {
             for (const comment of page.data) {
               if (String(comment.id) === id) {
                 const isUpvoted = comment.commentUpvotes.length > 0;
-                comment.points = isUpvoted ? -1 : 1;
+                comment.points += isUpvoted ? -1 : 1;
                 comment.commentUpvotes = isUpvoted ? [] : [{ userId: "" }];
               }
             }
@@ -205,6 +210,107 @@ export function useUpvoteCommentMutation() {
         queryClient.setQueriesData({ queryKey }, context.prevData);
         await queryClient.invalidateQueries({ queryKey });
       }
+    },
+  });
+}
+
+export function useCreateCommentMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      content,
+      isParent,
+    }: {
+      id: string;
+      content: string;
+      isParent?: boolean;
+    }) => createComment(id, content, isParent),
+    onMutate: ({ id, content, isParent }) => {
+      let prevData:
+        | InfiniteData<SuccessResponseWithPagination<Comment[]>>
+        | undefined;
+
+      const queryKey = isParent
+        ? ["comments", "comment", Number(id)]
+        : ["comments", "post", Number(id)];
+      console.log(queryKey);
+
+      const user = queryClient.getQueryData<string>(["user"]);
+
+      queryClient.setQueriesData<
+        InfiniteData<SuccessResponseWithPagination<Comment[]>>
+      >(
+        { queryKey },
+        produce((oldData) => {
+          prevData = current(oldData);
+          if (!oldData) {
+            return undefined;
+          }
+
+          if (oldData.pages.length > 0) {
+            const draftComment = {
+              id: -1,
+              userId: "",
+              content,
+              points: 0,
+              commentCount: 0,
+              createdAt: new Date().toISOString(),
+              postId: Number(id),
+              parentCommentId: null,
+              depth: 0,
+              commentUpvotes: [],
+              author: {
+                username: user ?? "",
+                id: "",
+              },
+              childComments: [],
+            };
+            oldData.pages[0].data.unshift(draftComment);
+          }
+        }),
+      );
+
+      return { prevData };
+    },
+    onSuccess: async (data, { id, isParent }) => {
+      const queryKey = isParent
+        ? ["comments", "comment", Number(id)]
+        : ["comments", "post", Number(id)];
+
+      if (data.success) {
+        await queryClient.invalidateQueries({
+          queryKey: ["post", data.data.postId],
+        });
+
+        queryClient.setQueriesData<
+          InfiniteData<SuccessResponseWithPagination<Comment[]>>
+        >(
+          { queryKey },
+          produce((oldData) => {
+            if (!oldData) {
+              return undefined;
+            }
+
+            if (oldData.pages.length > 0) {
+              oldData.pages[0].data = [
+                data.data,
+                ...oldData.pages[0].data.filter((comment) => comment.id !== -1),
+              ];
+            }
+          }),
+        );
+      }
+    },
+    onError: async (_error, { id, isParent }) => {
+      const queryKey = isParent
+        ? ["comments", "comment", Number(id)]
+        : ["comments", "post", Number(id)];
+
+      toast.error("Failed to create comment");
+
+      await queryClient.invalidateQueries({ queryKey });
     },
   });
 }
