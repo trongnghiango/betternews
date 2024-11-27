@@ -9,7 +9,6 @@ import { z } from "zod";
 
 import { OrderBySchema, SortBySchema } from "@/shared/types";
 import { getPosts } from "@/lib/api";
-import { useUpvotePostMutation } from "@/lib/api-hooks";
 import { Button } from "@/components/ui/button";
 import { PostCard } from "@/components/post-card";
 import { SortBar } from "@/components/sort-bar";
@@ -20,28 +19,6 @@ const HomeSearchSchema = z.object({
   author: fallback(z.string(), "").optional(),
   site: fallback(z.string(), "").optional(),
 });
-
-function postsInfiniteQueryOptions({
-  sortBy,
-  orderBy,
-  author,
-  site,
-}: z.infer<typeof HomeSearchSchema>) {
-  return infiniteQueryOptions({
-    queryKey: ["posts", sortBy, orderBy, author, site],
-    queryFn: ({ pageParam }) =>
-      getPosts({ pageParam, pagination: { sortBy, orderBy, author, site } }),
-    initialPageParam: 1,
-    staleTime: Infinity,
-    getNextPageParam: (lastPage, _allPages, lastPageParam) => {
-      if (lastPage.pagination.totalPages <= lastPageParam) {
-        return undefined;
-      }
-
-      return lastPageParam + 1;
-    },
-  });
-}
 
 export const Route = createFileRoute("/")({
   component: HomeComponent,
@@ -56,21 +33,15 @@ function HomeComponent() {
       postsInfiniteQueryOptions({ sortBy, orderBy, author, site }),
     );
 
-  const upvotePostMutation = useUpvotePostMutation();
-
   return (
     <div className="mx-auto max-w-3xl p-4">
-      <h1 className="mb-6 text-2xl font-bold text-foreground">Submissions</h1>
-      <SortBar sortBy={sortBy} orderBy={orderBy} />
+      <h1 className="text-2xl font-bold">Submissions</h1>
+      <div className="mt-6">
+        <SortBar sortBy={sortBy} orderBy={orderBy} />
+      </div>
       <div className="space-y-4">
         {data.pages.map((page) =>
-          page.data.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onUpvote={() => upvotePostMutation.mutate(String(post.id))}
-            />
-          )),
+          page.data.map((post) => <PostCard key={post.id} post={post} />),
         )}
       </div>
       <div className="mt-6">
@@ -87,4 +58,29 @@ function HomeComponent() {
       </div>
     </div>
   );
+}
+
+function postsInfiniteQueryOptions({
+  sortBy,
+  orderBy,
+  author,
+  site,
+}: z.infer<typeof HomeSearchSchema>) {
+  return infiniteQueryOptions({
+    queryKey: ["posts", sortBy, orderBy, author, site],
+    queryFn: ({ pageParam }) =>
+      getPosts({
+        page: pageParam,
+        pagination: { sortBy, orderBy, author, site },
+      }),
+    initialPageParam: 1,
+    staleTime: Infinity,
+    getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+      if (lastPage.pagination.totalPages <= lastPageParam) {
+        return undefined;
+      }
+
+      return lastPageParam + 1;
+    },
+  });
 }

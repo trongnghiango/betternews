@@ -12,6 +12,10 @@ const client = hc<ApiRoutes>("/", {
     }),
 }).api;
 
+/**
+ * Auth API Routes
+ */
+
 export async function signup(username: string, password: string) {
   try {
     const res = await client.auth.signup.$post({
@@ -76,68 +80,9 @@ export function userQueryOptions() {
   });
 }
 
-export type GetPostsSuccessResponse = InferResponseType<
-  typeof client.posts.$get
->;
-export async function getPosts({
-  pageParam = 1,
-  pagination,
-}: {
-  pageParam: number;
-  pagination: {
-    sortBy?: SortBy;
-    orderBy?: OrderBy;
-    author?: string;
-    site?: string;
-  };
-}) {
-  const res = await client.posts.$get({
-    query: {
-      page: String(pageParam),
-      sortBy: pagination.sortBy,
-      orderBy: pagination.orderBy,
-      author: pagination.author,
-      site: pagination.site,
-    },
-  });
-  if (!res.ok) {
-    const data = (await res.json()) as unknown as ErrorResponse;
-    throw new Error(data.error);
-  }
-
-  return await res.json();
-}
-
-export async function getPost(id: string) {
-  const res = await client.posts[":postId"].$get({
-    param: {
-      postId: id,
-    },
-  });
-
-  if (res.status === 404) {
-    throw notFound();
-  }
-
-  if (!res.ok) {
-    const data = (await res.json()) as unknown as ErrorResponse;
-    throw new Error(data.error);
-  }
-
-  return await res.json();
-}
-
-export async function upvotePost(id: string) {
-  const res = await client.posts[":postId"].upvote.$patch({
-    param: { postId: id },
-  });
-  if (!res.ok) {
-    const data = (await res.json()) as unknown as ErrorResponse;
-    throw new Error(data.error);
-  }
-
-  return await res.json();
-}
+/**
+ * Posts API Routes
+ */
 
 export async function createPost(title: string, url: string, content: string) {
   try {
@@ -161,4 +106,129 @@ export async function createPost(title: string, url: string, content: string) {
       isFormError: false,
     } satisfies ErrorResponse;
   }
+}
+
+export type GetPostsSuccessResponse = InferResponseType<
+  typeof client.posts.$get
+>;
+export async function getPosts({
+  page = 1,
+  pagination,
+}: {
+  page: number;
+  pagination: {
+    sortBy?: SortBy;
+    orderBy?: OrderBy;
+    author?: string;
+    site?: string;
+  };
+}) {
+  const res = await client.posts.$get({
+    query: {
+      page: String(page),
+      sortBy: pagination.sortBy,
+      orderBy: pagination.orderBy,
+      author: pagination.author,
+      site: pagination.site,
+    },
+  });
+  if (!res.ok) {
+    const data = (await res.json()) as unknown as ErrorResponse;
+    throw new Error(data.error);
+  }
+
+  return await res.json();
+}
+
+export async function getPost(id: string) {
+  const res = await client.posts[":id"].$get({
+    param: {
+      id,
+    },
+  });
+
+  if (res.status === 404) {
+    throw notFound();
+  }
+
+  if (!res.ok) {
+    const data = (await res.json()) as unknown as ErrorResponse;
+    throw new Error(data.error);
+  }
+
+  return await res.json();
+}
+
+export async function getPostComments(
+  id: string,
+  {
+    page = 1,
+    pagination,
+  }: {
+    page: number;
+    pagination: {
+      sortBy?: SortBy;
+      orderBy?: OrderBy;
+    };
+  },
+) {
+  const res = await client.posts[":id"].comments.$get({
+    param: { id },
+    query: {
+      page: String(page),
+      sortBy: pagination.sortBy,
+      orderBy: pagination.orderBy,
+      includeChildren: "true",
+    },
+  });
+  if (!res.ok) {
+    const data = (await res.json()) as unknown as ErrorResponse;
+    throw new Error(data.error);
+  }
+
+  return await res.json();
+}
+
+export async function upvotePost(id: string) {
+  const res = await client.posts[":id"].upvote.$patch({
+    param: { id },
+  });
+  if (!res.ok) {
+    const data = (await res.json()) as unknown as ErrorResponse;
+    throw new Error(data.error);
+  }
+
+  return await res.json();
+}
+
+/**
+ * Comments API Routes
+ */
+
+export async function getCommentComments(id: string, page = 1, limit = 2) {
+  const res = await client.comments[":id"].comments.$get({
+    param: { id },
+    query: {
+      page: String(page),
+      limit: String(limit),
+    },
+  });
+  if (!res.ok) {
+    const data = (await res.json()) as unknown as ErrorResponse;
+    throw new Error(data.error);
+  }
+
+  return await res.json();
+}
+
+export async function upvoteComment(id: string) {
+  const res = await client.comments[":id"].upvote.$patch({
+    param: { id },
+  });
+  if (!res.ok) {
+    const data = (await res.json()) as unknown as ErrorResponse;
+    throw new Error(data.error);
+  }
+
+  return await res.json();
 }

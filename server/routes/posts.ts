@@ -48,20 +48,20 @@ export const postsRouter = new Hono<Context>()
     );
   })
   .post(
-    "/:postId/comment",
+    "/:id/comment",
     loggedIn,
-    zValidator("param", z.object({ postId: z.coerce.number() })),
+    zValidator("param", z.object({ id: z.coerce.number() })),
     zValidator("form", CreateCommentSchema),
     async (c) => {
       const user = c.get("user")!;
-      const { postId } = c.req.valid("param");
+      const { id } = c.req.valid("param");
       const { content } = c.req.valid("form");
 
       const [comment] = await db.transaction(async (tx) => {
         const [updated] = await tx
           .update(postsTable)
           .set({ commentCount: sql`${postsTable.commentCount} + 1` })
-          .where(eq(postsTable.id, postId))
+          .where(eq(postsTable.id, id))
           .returning({ commentCount: postsTable.commentCount });
         if (!updated) {
           throw new HTTPException(404, { message: "Post not found" });
@@ -69,7 +69,7 @@ export const postsRouter = new Hono<Context>()
 
         return await tx
           .insert(commentsTable)
-          .values({ content, userId: user.id, postId })
+          .values({ userId: user.id, postId: id, content })
           .returning({
             id: commentsTable.id,
             userId: commentsTable.userId,
@@ -171,11 +171,11 @@ export const postsRouter = new Hono<Context>()
     );
   })
   .get(
-    "/:postId",
-    zValidator("param", z.object({ postId: z.coerce.number() })),
+    "/:id",
+    zValidator("param", z.object({ id: z.coerce.number() })),
     async (c) => {
       const user = c.get("user");
-      const { postId } = c.req.valid("param");
+      const { id } = c.req.valid("param");
 
       const postsQuery = db
         .select({
@@ -196,7 +196,7 @@ export const postsRouter = new Hono<Context>()
         })
         .from(postsTable)
         .leftJoin(userTable, eq(postsTable.userId, userTable.id))
-        .where(eq(postsTable.id, postId));
+        .where(eq(postsTable.id, id));
 
       if (user) {
         postsQuery.leftJoin(
@@ -224,8 +224,8 @@ export const postsRouter = new Hono<Context>()
     },
   )
   .get(
-    "/:postId/comments",
-    zValidator("param", z.object({ postId: z.coerce.number() })),
+    "/:id/comments",
+    zValidator("param", z.object({ id: z.coerce.number() })),
     zValidator(
       "query",
       PaginationSchema.extend({
@@ -234,7 +234,7 @@ export const postsRouter = new Hono<Context>()
     ),
     async (c) => {
       const user = c.get("user");
-      const { postId } = c.req.valid("param");
+      const { id } = c.req.valid("param");
       const { limit, page, sortBy, orderBy, includeChildren } =
         c.req.valid("query");
 
@@ -247,7 +247,7 @@ export const postsRouter = new Hono<Context>()
       const [postExists] = await db
         .select({ exists: sql`1` })
         .from(postsTable)
-        .where(eq(postsTable.id, postId))
+        .where(eq(postsTable.id, id))
         .limit(1);
       if (!postExists) {
         throw new HTTPException(404, { message: "Post not found" });
@@ -258,14 +258,14 @@ export const postsRouter = new Hono<Context>()
         .from(commentsTable)
         .where(
           and(
-            eq(commentsTable.postId, postId),
+            eq(commentsTable.postId, id),
             isNull(commentsTable.parentCommentId),
           ),
         );
 
       const comments = await db.query.comments.findMany({
         where: and(
-          eq(commentsTable.postId, postId),
+          eq(commentsTable.postId, id),
           isNull(commentsTable.parentCommentId),
         ),
         limit,
@@ -328,12 +328,12 @@ export const postsRouter = new Hono<Context>()
     },
   )
   .patch(
-    "/:postId/upvote",
+    "/:id/upvote",
     loggedIn,
-    zValidator("param", z.object({ postId: z.coerce.number() })),
+    zValidator("param", z.object({ id: z.coerce.number() })),
     async (c) => {
       const user = c.get("user")!;
-      const { postId } = c.req.valid("param");
+      const { id } = c.req.valid("param");
 
       let pointsChange: -1 | 1 = 1;
 
@@ -343,7 +343,7 @@ export const postsRouter = new Hono<Context>()
           .from(postUpvotesTable)
           .where(
             and(
-              eq(postUpvotesTable.postId, postId),
+              eq(postUpvotesTable.postId, id),
               eq(postUpvotesTable.userId, user.id),
             ),
           )
@@ -354,7 +354,7 @@ export const postsRouter = new Hono<Context>()
         const [updated] = await tx
           .update(postsTable)
           .set({ points: sql`${postsTable.points} + ${pointsChange}` })
-          .where(eq(postsTable.id, postId))
+          .where(eq(postsTable.id, id))
           .returning({ points: postsTable.points });
         if (!updated) {
           throw new HTTPException(404, { message: "Post not found" });
@@ -365,7 +365,9 @@ export const postsRouter = new Hono<Context>()
             .delete(postUpvotesTable)
             .where(eq(postUpvotesTable.id, existingUpvote.id));
         } else {
-          await tx.insert(postUpvotesTable).values({ postId, userId: user.id });
+          await tx
+            .insert(postUpvotesTable)
+            .values({ postId: id, userId: user.id });
         }
 
         return updated.points;

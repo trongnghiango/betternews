@@ -1,8 +1,8 @@
 ### Add child comment on parent
-POST http://localhost:3000/api/comments/1
+POST http://localhost:3000/api/comments/54
 Content-Type: application/x-www-form-urlencoded
 
-content=True!
+content=test
 
 ### Get comment for parent comment
 GET http://localhost:3000/api/comments/3/comments

@@ -3,24 +3,21 @@ import { Link } from "@tanstack/react-router";
 import { ChevronUpIcon } from "lucide-react";
 
 import type { Post } from "@/shared/types";
+import { useUpvotePostMutation } from "@/lib/api-hooks";
 import { cn, relativeTime } from "@/lib/utils";
 
 import { badgeVariants } from "./ui/badge";
 import { Card, CardContent, CardTitle } from "./ui/card";
 
-export function PostCard({
-  post,
-  onUpvote,
-}: {
-  post: Post;
-  onUpvote?: () => void;
-}) {
+export function PostCard({ post }: { post: Post }) {
+  const upvotePostMutation = useUpvotePostMutation();
+
   return (
-    <Card className="flex items-start justify-start pt-3">
+    <Card className="flex items-start justify-start pl-3 pt-3">
       <button
-        onClick={() => onUpvote?.()}
+        onClick={() => upvotePostMutation.mutate(String(post.id))}
         className={cn(
-          "ml-3 flex flex-col items-center justify-center",
+          "inline-flex flex-col items-center justify-center",
           post.isUpvoted
             ? "text-primary"
             : "text-muted-foreground hover:text-primary",
@@ -70,7 +67,7 @@ export function PostCard({
           {post.content ? (
             <p className="mb-2 text-sm text-foreground">{post.content}</p>
           ) : null}
-          <div className="flex flex-wrap items-center gap-x-1 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
             <span>
               by{" "}
               <Link

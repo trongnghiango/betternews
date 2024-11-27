@@ -22,20 +22,20 @@ import { getISOFormatDateQuery } from "@/lib/utils";
 
 export const commentsRouter = new Hono<Context>()
   .post(
-    "/:parentCommentId",
+    "/:id",
     loggedIn,
-    zValidator("param", z.object({ parentCommentId: z.coerce.number() })),
+    zValidator("param", z.object({ id: z.coerce.number() })),
     zValidator("form", CreateCommentSchema),
     async (c) => {
       const user = c.get("user")!;
-      const { parentCommentId } = c.req.valid("param");
+      const { id } = c.req.valid("param");
       const { content } = c.req.valid("form");
 
       const [comment] = await db.transaction(async (tx) => {
         const [updatedParentComment] = await tx
           .update(commentsTable)
           .set({ commentCount: sql`${commentsTable.commentCount} + 1` })
-          .where(eq(commentsTable.id, parentCommentId))
+          .where(eq(commentsTable.id, id))
           .returning({
             postId: commentsTable.postId,
             depth: commentsTable.depth,
@@ -61,7 +61,7 @@ export const commentsRouter = new Hono<Context>()
           .values({
             userId: user.id,
             postId: updatedParentComment.postId,
-            parentCommentId,
+            parentCommentId: id,
             content,
             depth: updatedParentComment.depth + 1,
           })
@@ -93,12 +93,12 @@ export const commentsRouter = new Hono<Context>()
     },
   )
   .get(
-    "/:parentCommentId/comments",
-    zValidator("param", z.object({ parentCommentId: z.coerce.number() })),
+    "/:id/comments",
+    zValidator("param", z.object({ id: z.coerce.number() })),
     zValidator("query", PaginationSchema),
     async (c) => {
       const user = c.get("user")!;
-      const { parentCommentId } = c.req.valid("param");
+      const { id } = c.req.valid("param");
       const { limit, page, sortBy, orderBy } = c.req.valid("query");
 
       const offset = (page - 1) * limit;
@@ -110,10 +110,10 @@ export const commentsRouter = new Hono<Context>()
       const [count] = await db
         .select({ count: countDistinct(commentsTable.id) })
         .from(commentsTable)
-        .where(eq(commentsTable.parentCommentId, parentCommentId));
+        .where(eq(commentsTable.parentCommentId, id));
 
       const comments = await db.query.comments.findMany({
-        where: eq(commentsTable.parentCommentId, parentCommentId),
+        where: eq(commentsTable.parentCommentId, id),
         limit,
         offset,
         orderBy: sortOrder,
@@ -152,12 +152,12 @@ export const commentsRouter = new Hono<Context>()
     },
   )
   .patch(
-    "/:commentId/upvote",
+    "/:id/upvote",
     loggedIn,
-    zValidator("param", z.object({ commentId: z.coerce.number() })),
+    zValidator("param", z.object({ id: z.coerce.number() })),
     async (c) => {
       const user = c.get("user")!;
-      const { commentId } = c.req.valid("param");
+      const { id } = c.req.valid("param");
 
       let pointsChange: -1 | 1 = 1;
 
@@ -167,7 +167,7 @@ export const commentsRouter = new Hono<Context>()
           .from(commentUpvotesTable)
           .where(
             and(
-              eq(commentUpvotesTable.commentId, commentId),
+              eq(commentUpvotesTable.commentId, id),
               eq(commentUpvotesTable.userId, user.id),
             ),
           )
@@ -180,7 +180,7 @@ export const commentsRouter = new Hono<Context>()
           .set({
             points: sql`${commentsTable.points} + ${pointsChange}`,
           })
-          .where(eq(commentsTable.id, commentId))
+          .where(eq(commentsTable.id, id))
           .returning({ points: commentsTable.points });
         if (!updated) {
           throw new HTTPException(404, { message: "Comment not found" });
@@ -193,7 +193,7 @@ export const commentsRouter = new Hono<Context>()
         } else {
           await tx
             .insert(commentUpvotesTable)
-            .values({ commentId, userId: user.id });
+            .values({ commentId: id, userId: user.id });
         }
 
         return updated.points;

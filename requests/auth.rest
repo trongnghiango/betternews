@@ -9,8 +9,8 @@ username=mzelinka
 POST http://localhost:3000/api/auth/login
 Content-Type: application/x-www-form-urlencoded
 
-username=ryan
-&password=ryaniscool
+username=marek
+&password=marekiscool
 
 ### Sign out
 GET http://localhost:3000/api/auth/logout

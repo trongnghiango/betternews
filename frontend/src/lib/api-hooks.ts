@@ -7,14 +7,14 @@ import {
 import { current, produce } from "immer";
 import { toast } from "sonner";
 
-import { type Post, type SuccessResponse } from "@/shared/types";
+import {
+  type Comment,
+  type Post,
+  type SuccessResponse,
+  type SuccessResponseWithPagination,
+} from "@/shared/types";
 
-import { upvotePost, type GetPostsSuccessResponse } from "./api";
-
-export function updatePostUpvote(draft: Post) {
-  draft.points += draft.isUpvoted ? -1 : 1;
-  draft.isUpvoted = !draft.isUpvoted;
-}
+import { upvoteComment, upvotePost, type GetPostsSuccessResponse } from "./api";
 
 export function useUpvotePostMutation() {
   const queryClient = useQueryClient();
@@ -35,7 +35,8 @@ export function useUpvotePostMutation() {
             return undefined;
           }
 
-          updatePostUpvote(draft.data);
+          draft.data.points += draft.data.isUpvoted ? -1 : 1;
+          draft.data.isUpvoted = !draft.data.isUpvoted;
         }),
       );
 
@@ -50,7 +51,8 @@ export function useUpvotePostMutation() {
           for (const page of oldData.pages) {
             for (const post of page.data) {
               if (post.id === postId) {
-                updatePostUpvote(post);
+                post.points += post.isUpvoted ? -1 : 1;
+                post.isUpvoted = !post.isUpvoted;
               }
             }
           }
@@ -59,7 +61,7 @@ export function useUpvotePostMutation() {
 
       return { prevData };
     },
-    onSuccess: (upvoteData, variables) => {
+    onSuccess: async (data, variables) => {
       const postId = Number(variables);
 
       queryClient.setQueryData<SuccessResponse<Post>>(
@@ -69,8 +71,8 @@ export function useUpvotePostMutation() {
             return undefined;
           }
 
-          draft.data.points = upvoteData.data.count;
-          draft.data.isUpvoted = upvoteData.data.isUpvoted;
+          draft.data.points = data.data.count;
+          draft.data.isUpvoted = data.data.isUpvoted;
         }),
       );
 
@@ -84,24 +86,24 @@ export function useUpvotePostMutation() {
           for (const page of oldData.pages) {
             for (const post of page.data) {
               if (post.id === postId) {
-                post.points = upvoteData.data.count;
-                post.isUpvoted = upvoteData.data.isUpvoted;
+                post.points = data.data.count;
+                post.isUpvoted = data.data.isUpvoted;
               }
             }
           }
         }),
       );
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["posts"],
         type: "inactive",
         refetchType: "none",
       });
     },
-    onError: (_error, variables, context) => {
+    onError: async (_error, variables, context) => {
       const postId = Number(variables);
 
-      queryClient.invalidateQueries({ queryKey: ["post", postId] });
+      await queryClient.invalidateQueries({ queryKey: ["post", postId] });
 
       toast.error("Failed to upvote post");
 
@@ -110,7 +112,98 @@ export function useUpvotePostMutation() {
           { queryKey: ["posts"], type: "active" },
           context.prevData,
         );
-        queryClient.invalidateQueries({ queryKey: ["posts"] });
+        await queryClient.invalidateQueries({ queryKey: ["posts"] });
+      }
+    },
+  });
+}
+
+export function useUpvoteCommentMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+    }: {
+      id: string;
+      parentCommentId: number | null;
+      postId: number;
+    }) => upvoteComment(id),
+    onMutate: async ({ id, parentCommentId, postId }) => {
+      let prevData:
+        | InfiniteData<SuccessResponseWithPagination<Comment[]>>
+        | undefined;
+
+      const queryKey = parentCommentId
+        ? ["comments", "comment", parentCommentId]
+        : ["comments", "post", postId];
+
+      await queryClient.cancelQueries({ queryKey });
+
+      queryClient.setQueriesData<
+        InfiniteData<SuccessResponseWithPagination<Comment[]>>
+      >(
+        { queryKey },
+        produce((oldData) => {
+          prevData = current(oldData);
+          if (!oldData) {
+            return undefined;
+          }
+
+          for (const page of oldData.pages) {
+            for (const comment of page.data) {
+              if (String(comment.id) === id) {
+                const isUpvoted = comment.commentUpvotes.length > 0;
+                comment.points = isUpvoted ? -1 : 1;
+                comment.commentUpvotes = isUpvoted ? [] : [{ userId: "" }];
+              }
+            }
+          }
+        }),
+      );
+
+      return { prevData };
+    },
+    onSuccess: async (data, { id, parentCommentId, postId }) => {
+      const queryKey = parentCommentId
+        ? ["comments", "comment", parentCommentId]
+        : ["comments", "post", postId];
+
+      queryClient.setQueriesData<
+        InfiniteData<SuccessResponseWithPagination<Comment[]>>
+      >(
+        { queryKey },
+        produce((oldData) => {
+          if (!oldData) {
+            return undefined;
+          }
+
+          for (const page of oldData.pages) {
+            for (const comment of page.data) {
+              if (String(comment.id) === id) {
+                comment.points = data.data.count;
+                comment.commentUpvotes = data.data.commentUpvotes;
+              }
+            }
+          }
+        }),
+      );
+
+      await queryClient.invalidateQueries({
+        queryKey: ["comments", "post"],
+        refetchType: "none",
+      });
+    },
+    onError: async (_error, { parentCommentId, postId }, context) => {
+      const queryKey = parentCommentId
+        ? ["comments", "comment", parentCommentId]
+        : ["comments", "post", postId];
+
+      toast.error("Failed to upvote comment");
+
+      if (context?.prevData) {
+        queryClient.setQueriesData({ queryKey }, context.prevData);
+        await queryClient.invalidateQueries({ queryKey });
       }
     },
   });
