@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 
 import { ChevronUpIcon } from "lucide-react";
 
 import type { Post } from "@/shared/types";
+import { userQueryOptions } from "@/lib/api";
 import { useUpvotePostMutation } from "@/lib/api-hooks";
 import { cn, relativeTime } from "@/lib/utils";
 
@@ -10,11 +12,15 @@ import { badgeVariants } from "./ui/badge";
 import { Card, CardContent, CardTitle } from "./ui/card";
 
 export function PostCard({ post }: { post: Post }) {
+  const userQueryResult = useQuery(userQueryOptions());
+  const user = userQueryResult.data;
+
   const upvotePostMutation = useUpvotePostMutation();
 
   return (
     <Card className="flex items-start justify-start pl-3 pt-3">
       <button
+        disabled={!user}
         onClick={() => upvotePostMutation.mutate(String(post.id))}
         className={cn(
           "inline-flex flex-col items-center justify-center",

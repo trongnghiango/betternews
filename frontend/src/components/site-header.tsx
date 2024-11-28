@@ -27,8 +27,20 @@ export function SiteHeader() {
             BetterNews
           </Link>
           <nav className="flex items-center gap-4 max-md:hidden">
-            <Link className="hover:underline">New</Link>
-            <Link className="hover:underline">Top</Link>
+            <Link
+              to="/"
+              search={{ sortBy: "recent", orderBy: "desc" }}
+              className="hover:underline"
+            >
+              New
+            </Link>
+            <Link
+              to="/"
+              search={{ sortBy: "points", orderBy: "desc" }}
+              className="hover:underline"
+            >
+              Top
+            </Link>
             <Link to="/submit" className="hover:underline">
               Submit
             </Link>
@@ -88,13 +100,27 @@ function MobileNav() {
           <SheetDescription className="sr-only">Navigation</SheetDescription>
         </SheetHeader>
         <nav className="flex flex-col gap-4">
-          <Link onClick={() => setIsOpen(false)} className="hover:underline">
+          <Link
+            to="/"
+            search={{ sortBy: "recent", orderBy: "desc" }}
+            onClick={() => setIsOpen(false)}
+            className="hover:underline"
+          >
             New
           </Link>
-          <Link onClick={() => setIsOpen(false)} className="hover:underline">
+          <Link
+            to="/"
+            search={{ sortBy: "points", orderBy: "desc" }}
+            onClick={() => setIsOpen(false)}
+            className="hover:underline"
+          >
             Top
           </Link>
-          <Link onClick={() => setIsOpen(false)} className="hover:underline">
+          <Link
+            to="/submit"
+            onClick={() => setIsOpen(false)}
+            className="hover:underline"
+          >
             Submit
           </Link>
         </nav>

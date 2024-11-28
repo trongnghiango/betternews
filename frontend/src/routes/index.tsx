@@ -23,21 +23,25 @@ const HomeSearchSchema = z.object({
 export const Route = createFileRoute("/")({
   component: HomeComponent,
   validateSearch: zodSearchValidator(HomeSearchSchema),
+  loaderDeps: ({ search }) => ({ search }),
+  loader: async ({ context, deps: { search } }) => {
+    await context.queryClient.ensureInfiniteQueryData(
+      postsInfiniteQueryOptions(search),
+    );
+  },
 });
 
 function HomeComponent() {
-  const { sortBy, orderBy, author, site } = Route.useSearch();
+  const search = Route.useSearch();
 
   const { data, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    useSuspenseInfiniteQuery(
-      postsInfiniteQueryOptions({ sortBy, orderBy, author, site }),
-    );
+    useSuspenseInfiniteQuery(postsInfiniteQueryOptions(search));
 
   return (
     <div className="mx-auto max-w-3xl p-4">
       <h1 className="text-2xl font-bold">Submissions</h1>
       <div className="mt-6">
-        <SortBar sortBy={sortBy} orderBy={orderBy} />
+        <SortBar sortBy={search.sortBy} orderBy={search.orderBy} />
       </div>
       <div className="space-y-4">
         {data.pages.map((page) =>

@@ -29,6 +29,15 @@ const PostSearchSchema = z.object({
 export const Route = createFileRoute("/post")({
   component: Post,
   validateSearch: zodSearchValidator(PostSearchSchema),
+  loaderDeps: ({ search }) => ({ search }),
+  loader: async ({ context, deps: { search } }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(postQueryOptions(search.id)),
+      context.queryClient.ensureInfiniteQueryData(
+        postCommentsInfiniteQueryOptions(search),
+      ),
+    ]);
+  },
 });
 
 function Post() {
@@ -54,10 +63,12 @@ function Post() {
           <CardTitle className="text-lg">Comments</CardTitle>
         </CardHeader>
         <CardContent>
-          {user ? <CommentForm id={id} /> : null}
-          <div className="mt-6">
-            <SortBar sortBy={sortBy} orderBy={orderBy} />
-          </div>
+          {user ? (
+            <div className="mb-6">
+              <CommentForm id={id} />
+            </div>
+          ) : null}
+          <SortBar sortBy={sortBy} orderBy={orderBy} />
           {postComments.pages[0].data.length > 0 ? (
             <div className="mt-4">
               {postComments.pages.map((page) =>
