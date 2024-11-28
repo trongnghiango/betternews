@@ -1,7 +1,7 @@
+import { lazy } from "react";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
@@ -32,3 +32,12 @@ function RootComponent() {
     </>
   );
 }
+
+const TanStackRouterDevtools =
+  process.env.NODE_ENV === "production"
+    ? () => null // Render nothing in production
+    : lazy(() =>
+        import("@tanstack/router-devtools").then((res) => ({
+          default: res.TanStackRouterDevtools,
+        })),
+      );

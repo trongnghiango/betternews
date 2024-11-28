@@ -235,7 +235,6 @@ export function useCreateCommentMutation() {
       const queryKey = isParent
         ? ["comments", "comment", Number(id)]
         : ["comments", "post", Number(id)];
-      console.log(queryKey);
 
       const user = queryClient.getQueryData<string>(["user"]);
 

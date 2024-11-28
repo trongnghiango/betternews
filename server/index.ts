@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { serveStatic } from "hono/bun";
 import { cors } from "hono/cors";
 import { HTTPException } from "hono/http-exception";
 
@@ -11,10 +12,6 @@ import { commentsRouter } from "./routes/comments";
 import { postsRouter } from "./routes/posts";
 
 const app = new Hono<Context>();
-
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
-});
 
 app.use("*", cors(), async (c, next) => {
   const sessionId = lucia.readSessionCookie(c.req.header("Cookie") ?? "");
@@ -81,4 +78,12 @@ app.onError((err, c) => {
   );
 });
 
-export default app;
+app.get("*", serveStatic({ root: "./frontend/dist" }));
+
+console.log("Server Running on port", process.env["PORT"] || 3000);
+
+export default {
+  port: process.env["PORT"] || 3000,
+  hostname: "0.0.0.0",
+  fetch: app.fetch,
+};

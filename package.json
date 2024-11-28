@@ -1,6 +1,7 @@
 {
   "name": "betternews",
   "scripts": {
+    "start": "bun server/index.ts",
     "dev": "bun run --hot server/index.ts",
     "format:write": "prettier . --write",
     "format:check": "prettier . --check",
