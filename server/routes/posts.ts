@@ -1,9 +1,12 @@
 import { db } from "@/adapter";
 import type { Context } from "@/context";
-import { userTable } from "@/db/schemas/auth";
-import { commentsTable } from "@/db/schemas/comments";
-import { postsTable } from "@/db/schemas/posts";
-import { commentUpvotesTable, postUpvotesTable } from "@/db/schemas/upvotes";
+import {
+  commentsTable,
+  commentUpvotesTable,
+  postsTable,
+  postUpvotesTable,
+  userTable,
+} from "@/db/schema";
 import { getISOFormatDateQuery } from "@/lib/utils";
 import { loggedIn } from "@/middleware";
 import {

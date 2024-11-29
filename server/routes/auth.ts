@@ -1,16 +1,15 @@
 import { db } from "@/adapter";
 import type { Context } from "@/context";
-import { userTable } from "@/db/schemas/auth";
+import { userTable } from "@/db/schema";
 import { lucia } from "@/lucia";
 import { loggedIn } from "@/middleware";
+import { LoginSchema, type SuccessResponse } from "@/shared/types";
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { generateId } from "lucia";
 import postgres from "postgres";
-
-import { LoginSchema, type SuccessResponse } from "@/shared/types";
 
 export const authRouter = new Hono<Context>()
   .post("/signup", zValidator("form", LoginSchema), async (c) => {

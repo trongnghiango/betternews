@@ -1,6 +1,6 @@
+import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-import { InsertCommentSchema } from "../server/db/schemas/comments";
-import { InsertPostSchema } from "../server/db/schemas/posts";
+import { commentsTable, postsTable } from "../server/db/schema";
 
 export type { ApiRoutes } from "../server/index";
 
@@ -77,6 +77,19 @@ export const LoginSchema = z.object({
   password: z.string().min(3).max(255),
 });
 
+export const InsertPostSchema = createInsertSchema(postsTable, {
+  title: z
+    .string()
+    .min(3, { message: "Title must be at least 3 characters long" }),
+  url: z
+    .string()
+    .trim()
+    .url({ message: "URL must be valid" })
+    .optional()
+    .or(z.literal("")),
+  content: z.string().optional(),
+});
+
 export const CreatePostSchema = InsertPostSchema.pick({
   title: true,
   url: true,
@@ -84,6 +97,12 @@ export const CreatePostSchema = InsertPostSchema.pick({
 }).refine((data) => data.url || data.content, {
   message: "Either URL or Content must be provided",
   path: ["url", "content"],
+});
+
+export const InsertCommentSchema = createInsertSchema(commentsTable, {
+  content: z
+    .string()
+    .min(3, { message: "Content must be at least 3 characters long" }),
 });
 
 export const CreateCommentSchema = InsertCommentSchema.pick({ content: true });

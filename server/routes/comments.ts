@@ -1,8 +1,6 @@
 import { db } from "@/adapter";
 import type { Context } from "@/context";
-import { commentsTable } from "@/db/schemas/comments";
-import { postsTable } from "@/db/schemas/posts";
-import { commentUpvotesTable } from "@/db/schemas/upvotes";
+import { commentsTable, commentUpvotesTable, postsTable } from "@/db/schema";
 import { getISOFormatDateQuery } from "@/lib/utils";
 import { loggedIn } from "@/middleware";
 import {
