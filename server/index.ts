@@ -80,8 +80,6 @@ app.onError((err, c) => {
 
 app.get("*", serveStatic({ root: "./frontend/dist" }));
 
-console.log("Server Running on port", process.env["PORT"] || 3000);
-
 export default {
   port: process.env["PORT"] || 3000,
   hostname: "0.0.0.0",
