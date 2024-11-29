@@ -1,9 +1,9 @@
-import { db } from "@/adapter";
 import type { Context } from "@/context";
 import { userTable } from "@/db/schema";
-import { lucia } from "@/lucia";
-import { loggedIn } from "@/middleware";
 import { LoginSchema, type SuccessResponse } from "@/shared/types";
+import { lucia } from "@/utils/auth";
+import { db } from "@/utils/db";
+import { verifyAuth } from "@/utils/middleware";
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
@@ -15,10 +15,10 @@ export const authRouter = new Hono<Context>()
   .post("/signup", zValidator("form", LoginSchema), async (c) => {
     const { username, password } = c.req.valid("form");
 
-    const passwordHash = await Bun.password.hash(password);
-    const userId = generateId(15);
-
     try {
+      const userId = generateId(15);
+      const passwordHash = await Bun.password.hash(password);
+
       await db.insert(userTable).values({
         id: userId,
         username,
@@ -94,7 +94,7 @@ export const authRouter = new Hono<Context>()
 
     return c.redirect("/");
   })
-  .get("/user", loggedIn, async (c) => {
+  .get("/user", verifyAuth, async (c) => {
     const user = c.get("user")!;
 
     return c.json<SuccessResponse<{ username: string }>>({

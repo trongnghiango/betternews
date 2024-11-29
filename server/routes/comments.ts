@@ -1,8 +1,5 @@
-import { db } from "@/adapter";
 import type { Context } from "@/context";
 import { commentsTable, commentUpvotesTable, postsTable } from "@/db/schema";
-import { getISOFormatDateQuery } from "@/lib/utils";
-import { loggedIn } from "@/middleware";
 import {
   CreateCommentSchema,
   PaginationSchema,
@@ -10,6 +7,9 @@ import {
   type SuccessResponse,
   type SuccessResponseWithPagination,
 } from "@/shared/types";
+import { db } from "@/utils/db";
+import { verifyAuth } from "@/utils/middleware";
+import { getISOFormatDateQuery } from "@/utils/sql";
 import { zValidator } from "@hono/zod-validator";
 import { and, asc, countDistinct, desc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
@@ -19,7 +19,7 @@ import { z } from "zod";
 export const commentsRouter = new Hono<Context>()
   .post(
     "/:id",
-    loggedIn,
+    verifyAuth,
     zValidator("param", z.object({ id: z.coerce.number() })),
     zValidator("form", CreateCommentSchema),
     async (c) => {
@@ -149,7 +149,7 @@ export const commentsRouter = new Hono<Context>()
   )
   .patch(
     "/:id/upvote",
-    loggedIn,
+    verifyAuth,
     zValidator("param", z.object({ id: z.coerce.number() })),
     async (c) => {
       const user = c.get("user")!;

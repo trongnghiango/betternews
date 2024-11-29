@@ -1,4 +1,3 @@
-import { db } from "@/adapter";
 import type { Context } from "@/context";
 import {
   commentsTable,
@@ -7,8 +6,6 @@ import {
   postUpvotesTable,
   userTable,
 } from "@/db/schema";
-import { getISOFormatDateQuery } from "@/lib/utils";
-import { loggedIn } from "@/middleware";
 import {
   CreateCommentSchema,
   CreatePostSchema,
@@ -18,6 +15,9 @@ import {
   type SuccessResponse,
   type SuccessResponseWithPagination,
 } from "@/shared/types";
+import { db } from "@/utils/db";
+import { verifyAuth } from "@/utils/middleware";
+import { getISOFormatDateQuery } from "@/utils/sql";
 import { zValidator } from "@hono/zod-validator";
 import { and, asc, countDistinct, desc, eq, isNull, sql } from "drizzle-orm";
 import { Hono } from "hono";
@@ -25,7 +25,7 @@ import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
 
 export const postsRouter = new Hono<Context>()
-  .post("/", loggedIn, zValidator("form", CreatePostSchema), async (c) => {
+  .post("/", verifyAuth, zValidator("form", CreatePostSchema), async (c) => {
     const user = c.get("user")!;
     const { title, url, content } = c.req.valid("form");
 
@@ -50,7 +50,7 @@ export const postsRouter = new Hono<Context>()
   })
   .post(
     "/:id/comment",
-    loggedIn,
+    verifyAuth,
     zValidator("param", z.object({ id: z.coerce.number() })),
     zValidator("form", CreateCommentSchema),
     async (c) => {
@@ -330,7 +330,7 @@ export const postsRouter = new Hono<Context>()
   )
   .patch(
     "/:id/upvote",
-    loggedIn,
+    verifyAuth,
     zValidator("param", z.object({ id: z.coerce.number() })),
     async (c) => {
       const user = c.get("user")!;
