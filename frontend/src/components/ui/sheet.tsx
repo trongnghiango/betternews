@@ -1,15 +1,13 @@
+import { cn } from "@/lib/utils";
+import * as SheetPrimitive from "@radix-ui/react-dialog";
+import { cva, type VariantProps } from "class-variance-authority";
+import { XIcon } from "lucide-react";
 import {
   forwardRef,
   type ComponentPropsWithoutRef,
   type ElementRef,
   type HTMLAttributes,
 } from "react";
-
-import * as SheetPrimitive from "@radix-ui/react-dialog";
-import { cva, type VariantProps } from "class-variance-authority";
-import { X } from "lucide-react";
-
-import { cn } from "@/lib/utils";
 
 export const Sheet = SheetPrimitive.Root;
 
@@ -69,7 +67,7 @@ export const SheetContent = forwardRef<
       {...props}
     >
       <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none">
-        <X className="size-4" />
+        <XIcon className="size-4" />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>
       {children}

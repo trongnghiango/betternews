@@ -4,33 +4,41 @@ import { commentsTable, postsTable } from "../server/db/schema";
 
 export type { ApiRoutes } from "../server/index";
 
+/**
+ * @example
+ * ```ts
+ * const data: SuccessResponse<{ id: number }> = {
+ *   success: true,
+ *   message: "Post created",
+ *   data: { id: 1 },
+ * };
+ * ```
+ */
 export type SuccessResponse<T = void> = {
   success: true;
   message: string;
 } & (T extends void ? {} : { data: T });
 
-// const data: SuccessResponse<{ id: number }> = {
-//   success: true,
-//   message: "Post created",
-//   data: { id: 1 },
-// };
-
+/**
+ * @example
+ * ```ts
+ * const data: SuccessResponseWithPagination<{ id: number }> = {
+ *   success: true,
+ *   message: "Post created",
+ *   data: { id: 1 },
+ *   pagination: {
+ *     page: 1,
+ *     totalPages: 6
+ *   }
+ * };
+ * ```
+ */
 export type SuccessResponseWithPagination<T> = {
   pagination: {
     page: number;
     totalPages: number;
   };
 } & SuccessResponse<T>;
-
-// const data: SuccessResponseWithPagination<{ id: number }> = {
-//   success: true,
-//   message: "Post created",
-//   data: { id: 1 },
-//   pagination: {
-//     page: 1,
-//     totalPages: 6
-//   }
-// };
 
 export type ErrorResponse = {
   success: false;

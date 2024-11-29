@@ -1,19 +1,17 @@
+import { AccordionContent } from "@radix-ui/react-accordion";
 import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import {
   Link,
   useRouter,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
-
-import { AccordionContent } from "@radix-ui/react-accordion";
 import { AlertTriangleIcon } from "lucide-react";
-
+import { useEffect } from "react";
 import { Accordion, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Button } from "./ui/button";
 
-export function DefaultError({ error }: ErrorComponentProps) {
+export function DefaultErrorBoundary({ error }: ErrorComponentProps) {
   const router = useRouter();
 
   const queryErrorResetBoundary = useQueryErrorResetBoundary();
