@@ -1,11 +1,8 @@
-import { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-
-import { MenuIcon } from "lucide-react";
-
 import { userQueryOptions } from "@/lib/api";
-
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
+import { MenuIcon } from "lucide-react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import {
   Sheet,
@@ -20,7 +17,7 @@ export function SiteHeader() {
   const { data: user } = useQuery(userQueryOptions());
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-primary/95 backdrop-blur supports-[backdrop-filter]:bg-primary/90">
+    <header className="border-border/40 bg-primary/95 supports-[backdrop-filter]:bg-primary/90 sticky top-0 z-50 w-full border-b backdrop-blur">
       <div className="container mx-auto flex items-center justify-between p-4">
         <div className="flex items-center gap-4">
           <Link to="/" className="text-2xl font-bold">
@@ -135,7 +132,7 @@ function MobileNav() {
                 asChild
                 size="sm"
                 variant="secondary"
-                className="w-full bg-secondary-foreground text-primary-foreground hover:bg-secondary-foreground/70"
+                className="bg-secondary-foreground text-primary-foreground hover:bg-secondary-foreground/70 w-full"
               >
                 <a href="api/auth/logout">Log out</a>
               </Button>
@@ -145,7 +142,7 @@ function MobileNav() {
               asChild
               size="sm"
               variant="secondary"
-              className="w-full bg-secondary-foreground text-primary-foreground hover:bg-secondary-foreground/70"
+              className="bg-secondary-foreground text-primary-foreground hover:bg-secondary-foreground/70 w-full"
             >
               <Link to="/login" onClick={() => setIsOpen(false)}>
                 Log in

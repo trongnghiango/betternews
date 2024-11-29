@@ -1,12 +1,4 @@
-import { createFileRoute, useBlocker, useRouter } from "@tanstack/react-router";
-import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
-import { zodValidator } from "@tanstack/zod-form-adapter";
-
-import { toast } from "sonner";
-
-import { CreatePostSchema } from "@/shared/types";
-import { createPost } from "@/lib/api";
+import { FieldInfo } from "@/components/field-info";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,7 +10,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FieldInfo } from "@/components/field-info";
+import { createPost } from "@/lib/api";
+import { CreatePostSchema } from "@/shared/types";
+import { useForm } from "@tanstack/react-form";
+import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, useBlocker, useRouter } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-form-adapter";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_auth/submit")({
   component: Submit,
@@ -73,7 +71,7 @@ function Submit() {
   });
 
   return (
-    <Card className="mx-auto mt-12 max-w-lg border-border/25">
+    <Card className="border-border/25 mx-auto mt-12 max-w-lg">
       <form
         onSubmit={async (e) => {
           e.preventDefault();
@@ -141,7 +139,7 @@ function Submit() {
             <form.Subscribe selector={(state) => [state.errorMap]}>
               {([errorMap]) =>
                 errorMap.onSubmit ? (
-                  <p className="text-[0.8rem] font-medium text-destructive">
+                  <p className="text-destructive text-[0.8rem] font-medium">
                     {errorMap.onSubmit.toString()}
                   </p>
                 ) : null

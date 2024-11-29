@@ -1,12 +1,9 @@
-import { useRef } from "react";
+import { useCreateCommentMutation } from "@/lib/api-hooks";
+import { CreateCommentSchema } from "@/shared/types";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
-
+import { useRef } from "react";
 import { toast } from "sonner";
-
-import { CreateCommentSchema } from "@/shared/types";
-import { useCreateCommentMutation } from "@/lib/api-hooks";
-
 import { FieldInfo } from "./field-info";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
@@ -95,7 +92,7 @@ export function CommentForm({
         <form.Subscribe selector={(state) => [state.errorMap]}>
           {([errorMap]) =>
             errorMap.onSubmit ? (
-              <p className="text-[0.8rem] font-medium text-destructive">
+              <p className="text-destructive text-[0.8rem] font-medium">
                 {errorMap.onSubmit.toString()}
               </p>
             ) : null

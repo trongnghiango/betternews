@@ -1,10 +1,12 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { getCommentComments, userQueryOptions } from "@/lib/api";
+import { useUpvoteCommentMutation } from "@/lib/api-hooks";
+import { cn, relativeTime } from "@/lib/utils";
+import type { Comment } from "@/shared/types";
 import {
   useQuery,
   useQueryClient,
   useSuspenseInfiniteQuery,
 } from "@tanstack/react-query";
-
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -12,12 +14,7 @@ import {
   MinusIcon,
   PlusIcon,
 } from "lucide-react";
-
-import type { Comment } from "@/shared/types";
-import { getCommentComments, userQueryOptions } from "@/lib/api";
-import { useUpvoteCommentMutation } from "@/lib/api-hooks";
-import { cn, relativeTime } from "@/lib/utils";
-
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { CommentForm } from "./comment-form";
 import { Separator } from "./ui/separator";
 
@@ -82,12 +79,12 @@ export function CommentCard({
   return (
     <div
       className={cn(
-        depth > 0 ? "ml-4 border-l border-border pl-4" : "",
+        depth > 0 ? "border-border ml-4 border-l pl-4" : "",
         isDraft ? "pointer-events-none opacity-50" : "",
       )}
     >
       <div className="py-2">
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+        <div className="text-muted-foreground flex items-center gap-1 text-xs">
           <button
             disabled={!user}
             onClick={() =>
@@ -106,7 +103,7 @@ export function CommentCard({
             {comment.points}
           </button>
           <span>&middot;</span>
-          <span className="font-medium text-foreground">
+          <span className="text-foreground font-medium">
             {comment.author.username}
           </span>
           <span>&middot;</span>
@@ -128,7 +125,7 @@ export function CommentCard({
                   onClick={() =>
                     onActiveReplyIdChange(isReplying ? null : comment.id)
                   }
-                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs"
                 >
                   <MessageSquareIcon size={12} />
                   Reply
@@ -176,7 +173,7 @@ export function CommentCard({
                     await commentCommentsQueryResult.fetchNextPage();
                   }
                 }}
-                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs"
               >
                 <ChevronDownIcon size={12} />
                 {commentCommentsQueryResult.isFetchingNextPage

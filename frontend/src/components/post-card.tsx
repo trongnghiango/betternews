@@ -1,13 +1,10 @@
-import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-
-import { ChevronUpIcon } from "lucide-react";
-
-import type { Post } from "@/shared/types";
 import { userQueryOptions } from "@/lib/api";
 import { useUpvotePostMutation } from "@/lib/api-hooks";
 import { cn, relativeTime } from "@/lib/utils";
-
+import type { Post } from "@/shared/types";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
+import { ChevronUpIcon } from "lucide-react";
 import { badgeVariants } from "./ui/badge";
 import { Card, CardContent, CardTitle } from "./ui/card";
 
@@ -61,7 +58,7 @@ export function PostCard({ post }: { post: Post }) {
                   badgeVariants({
                     variant: "secondary",
                   }),
-                  "cursor-pointer text-xs font-normal transition-colors hover:bg-primary/80 hover:underline",
+                  "hover:bg-primary/80 cursor-pointer text-xs font-normal transition-colors hover:underline",
                 )}
               >
                 {new URL(post.url).hostname}
@@ -71,9 +68,9 @@ export function PostCard({ post }: { post: Post }) {
         </div>
         <CardContent className="p-3 pt-0">
           {post.content ? (
-            <p className="mb-2 text-sm text-foreground">{post.content}</p>
+            <p className="text-foreground mb-2 text-sm">{post.content}</p>
           ) : null}
-          <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+          <div className="text-muted-foreground flex flex-wrap items-center gap-1 text-xs">
             <span>
               by{" "}
               <Link

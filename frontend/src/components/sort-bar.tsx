@@ -1,10 +1,7 @@
-import { useNavigate } from "@tanstack/react-router";
-
-import { ArrowUpIcon } from "lucide-react";
-
-import type { OrderBy, SortBy } from "@/shared/types";
 import { cn } from "@/lib/utils";
-
+import type { OrderBy, SortBy } from "@/shared/types";
+import { useNavigate } from "@tanstack/react-router";
+import { ArrowUpIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Select,
@@ -31,7 +28,7 @@ export function SortBar({
           navigate({ to: ".", search: (prev) => ({ ...prev, sortBy }) })
         }
       >
-        <SelectTrigger className="w-[180px] bg-background">
+        <SelectTrigger className="bg-background w-[180px]">
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
         <SelectContent>

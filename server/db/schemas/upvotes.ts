@@ -1,6 +1,5 @@
 import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
-
 import { userTable } from "./auth";
 import { commentsTable } from "./comments";
 import { postsTable } from "./posts";

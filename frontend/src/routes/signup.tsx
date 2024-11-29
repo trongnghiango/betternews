@@ -1,19 +1,4 @@
-import {
-  createFileRoute,
-  Link,
-  redirect,
-  useRouter,
-} from "@tanstack/react-router";
-import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
-import { fallback, zodSearchValidator } from "@tanstack/router-zod-adapter";
-import { zodValidator } from "@tanstack/zod-form-adapter";
-
-import { toast } from "sonner";
-import { z } from "zod";
-
-import { LoginSchema } from "@/shared/types";
-import { signup, userQueryOptions } from "@/lib/api";
+import { FieldInfo } from "@/components/field-info";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,7 +9,20 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FieldInfo } from "@/components/field-info";
+import { signup, userQueryOptions } from "@/lib/api";
+import { LoginSchema } from "@/shared/types";
+import { useForm } from "@tanstack/react-form";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useRouter,
+} from "@tanstack/react-router";
+import { fallback, zodSearchValidator } from "@tanstack/router-zod-adapter";
+import { zodValidator } from "@tanstack/zod-form-adapter";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const SignupSearchSchema = z.object({
   redirect: fallback(z.string(), "/").default("/"),
@@ -82,7 +80,7 @@ function Signup() {
   });
 
   return (
-    <Card className="mx-auto mt-12 max-w-sm border-border/25">
+    <Card className="border-border/25 mx-auto mt-12 max-w-sm">
       <form
         onSubmit={async (e) => {
           e.preventDefault();
@@ -133,7 +131,7 @@ function Signup() {
             <form.Subscribe selector={(state) => [state.errorMap]}>
               {([errorMap]) =>
                 errorMap.onSubmit ? (
-                  <p className="text-[0.8rem] font-medium text-destructive">
+                  <p className="text-destructive text-[0.8rem] font-medium">
                     {errorMap.onSubmit.toString()}
                   </p>
                 ) : null

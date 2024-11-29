@@ -1,17 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { PostCard } from "@/components/post-card";
+import { SortBar } from "@/components/sort-bar";
+import { Button } from "@/components/ui/button";
+import { getPosts } from "@/lib/api";
+import { OrderBySchema, SortBySchema } from "@/shared/types";
 import {
   infiniteQueryOptions,
   useSuspenseInfiniteQuery,
 } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { fallback, zodSearchValidator } from "@tanstack/router-zod-adapter";
-
 import { z } from "zod";
-
-import { OrderBySchema, SortBySchema } from "@/shared/types";
-import { getPosts } from "@/lib/api";
-import { Button } from "@/components/ui/button";
-import { PostCard } from "@/components/post-card";
-import { SortBar } from "@/components/sort-bar";
 
 const HomeSearchSchema = z.object({
   sortBy: fallback(SortBySchema, "points").default("points"),

@@ -1,6 +1,5 @@
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
-
 import type { Context } from "./context";
 
 export const loggedIn = createMiddleware<Context>(async (c, next) => {

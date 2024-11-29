@@ -1,5 +1,10 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { CommentCard } from "@/components/comment-card";
+import { CommentForm } from "@/components/comment-form";
+import { PostCard } from "@/components/post-card";
+import { SortBar } from "@/components/sort-bar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getPost, getPostComments, userQueryOptions } from "@/lib/api";
+import { OrderBySchema, SortBySchema } from "@/shared/types";
 import {
   infiniteQueryOptions,
   queryOptions,
@@ -7,18 +12,11 @@ import {
   useSuspenseInfiniteQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { fallback, zodSearchValidator } from "@tanstack/router-zod-adapter";
-
 import { ChevronDownIcon } from "lucide-react";
+import { useState } from "react";
 import { z } from "zod";
-
-import { OrderBySchema, SortBySchema } from "@/shared/types";
-import { getPost, getPostComments, userQueryOptions } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CommentCard } from "@/components/comment-card";
-import { CommentForm } from "@/components/comment-form";
-import { PostCard } from "@/components/post-card";
-import { SortBar } from "@/components/sort-bar";
 
 const PostSearchSchema = z.object({
   id: fallback(z.number(), 0).default(0),
@@ -92,7 +90,7 @@ function Post() {
                 onClick={() => {
                   postCommentsQueryResult.fetchNextPage();
                 }}
-                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs"
               >
                 <ChevronDownIcon size={12} />
                 {postCommentsQueryResult.isFetchingNextPage

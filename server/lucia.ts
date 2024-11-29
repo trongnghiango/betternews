@@ -1,5 +1,4 @@
 import { Lucia } from "lucia";
-
 import { adapter } from "./adapter";
 
 export const lucia = new Lucia(adapter, {

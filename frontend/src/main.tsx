@@ -1,15 +1,11 @@
-import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
+import { createRouter, RouterProvider } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
-
-import { routeTree } from "./routeTree.gen";
-
-import "./globals.css";
-
 import { DefaultError } from "./components/default-error";
 import { DefaultNotFound } from "./components/default-not-found";
 import { DefaultPending } from "./components/default-pending";
+import "./globals.css";
+import { routeTree } from "./routeTree.gen";
 
 // Set up a Query client instance
 const queryClient = new QueryClient();

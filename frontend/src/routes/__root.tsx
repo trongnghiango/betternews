@@ -1,10 +1,9 @@
-import { lazy } from "react";
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { SiteHeader } from "@/components/site-header";
+import { Toaster } from "@/components/ui/sonner";
 import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-import { Toaster } from "@/components/ui/sonner";
-import { SiteHeader } from "@/components/site-header";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { lazy } from "react";
 
 interface RouterContext {
   queryClient: QueryClient;
@@ -23,7 +22,7 @@ function RootComponent() {
           <Outlet />
         </main>
         <footer className="p-4 text-center">
-          <p className="text-sm text-muted-foreground">BetterNews &copy;</p>
+          <p className="text-muted-foreground text-sm">BetterNews &copy;</p>
         </footer>
       </div>
       <Toaster />

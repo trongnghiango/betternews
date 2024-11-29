@@ -1,13 +1,12 @@
-import { Hono } from "hono";
-import { HTTPException } from "hono/http-exception";
-import { eq } from "drizzle-orm";
-
 import { db } from "@/adapter";
 import type { Context } from "@/context";
 import { userTable } from "@/db/schemas/auth";
 import { lucia } from "@/lucia";
 import { loggedIn } from "@/middleware";
 import { zValidator } from "@hono/zod-validator";
+import { eq } from "drizzle-orm";
+import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
 import { generateId } from "lucia";
 import postgres from "postgres";
 

@@ -1,19 +1,16 @@
 import {
-  useMutation,
-  useQueryClient,
-  type InfiniteData,
-} from "@tanstack/react-query";
-
-import { current, produce } from "immer";
-import { toast } from "sonner";
-
-import {
   type Comment,
   type Post,
   type SuccessResponse,
   type SuccessResponseWithPagination,
 } from "@/shared/types";
-
+import {
+  useMutation,
+  useQueryClient,
+  type InfiniteData,
+} from "@tanstack/react-query";
+import { current, produce } from "immer";
+import { toast } from "sonner";
 import {
   createComment,
   upvoteComment,

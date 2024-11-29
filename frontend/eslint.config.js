@@ -1,16 +1,14 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import pluginQuery from "@tanstack/eslint-plugin-query";
-import pluginRouter from "@tanstack/eslint-plugin-router";
-
 import { includeIgnoreFile } from "@eslint/compat";
 import pluginJs from "@eslint/js";
+import pluginQuery from "@tanstack/eslint-plugin-query";
+import pluginRouter from "@tanstack/eslint-plugin-router";
 import eslintConfigPrettier from "eslint-config-prettier";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
-import tailwind from "eslint-plugin-tailwindcss";
 import globals from "globals";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import tseslint from "typescript-eslint";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -28,7 +26,6 @@ export default [
   jsxA11y.flatConfigs.recommended,
   ...pluginRouter.configs["flat/recommended"],
   ...pluginQuery.configs["flat/recommended"],
-  ...tailwind.configs["flat/recommended"],
   eslintConfigPrettier,
   {
     plugins: {

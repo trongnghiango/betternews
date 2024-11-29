@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 import { InsertCommentSchema } from "../server/db/schemas/comments";
 import { InsertPostSchema } from "../server/db/schemas/posts";
 

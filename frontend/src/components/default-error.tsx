@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import {
   Link,
   useRouter,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useQueryErrorResetBoundary } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 import { AccordionContent } from "@radix-ui/react-accordion";
 import { AlertTriangleIcon } from "lucide-react";
@@ -54,7 +54,7 @@ function ErrorDetails({ error }: Pick<ErrorComponentProps, "error">) {
       <AccordionItem value="error-details">
         <AccordionTrigger>View error details</AccordionTrigger>
         <AccordionContent>
-          <dl className="rounded-md bg-muted p-4">
+          <dl className="bg-muted rounded-md p-4">
             <dt className="mb-2 font-semibold">Error Message:</dt>
             <dd className="mb-4 text-sm">{error.message}</dd>
             <dt className="mb-2 font-semibold">Stack Trace:</dt>
