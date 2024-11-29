@@ -1,16 +1,13 @@
-import { userQueryOptions } from "@/lib/api";
-import { useUpvotePostMutation } from "@/lib/api-hooks";
-import { cn, relativeTime } from "@/lib/utils";
+import { useUpvotePostMutation, useUser } from "@/lib/api-hooks";
+import { cx, relativeTime } from "@/lib/utils";
 import type { Post } from "@/shared/types";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ChevronUpIcon } from "lucide-react";
 import { badgeVariants } from "./ui/badge";
 import { Card, CardContent, CardTitle } from "./ui/card";
 
 export function PostCard({ post }: { post: Post }) {
-  const userQueryResult = useQuery(userQueryOptions());
-  const user = userQueryResult.data;
+  const user = useUser();
 
   const upvotePostMutation = useUpvotePostMutation();
 
@@ -19,7 +16,7 @@ export function PostCard({ post }: { post: Post }) {
       <button
         disabled={!user}
         onClick={() => upvotePostMutation.mutate(String(post.id))}
-        className={cn(
+        className={cx(
           "inline-flex flex-col items-center justify-center",
           post.isUpvoted
             ? "text-primary"
@@ -54,11 +51,11 @@ export function PostCard({ post }: { post: Post }) {
               <Link
                 to="/"
                 search={{ site: post.url }}
-                className={cn(
+                className={cx(
                   badgeVariants({
                     variant: "secondary",
                   }),
-                  "hover:bg-primary/80 cursor-pointer text-xs font-normal transition-colors hover:underline",
+                  "cursor-pointer text-xs font-normal transition-colors hover:bg-primary/80 hover:underline",
                 )}
               >
                 {new URL(post.url).hostname}
@@ -68,9 +65,9 @@ export function PostCard({ post }: { post: Post }) {
         </div>
         <CardContent className="p-3 pt-0">
           {post.content ? (
-            <p className="text-foreground mb-2 text-sm">{post.content}</p>
+            <p className="mb-2 text-sm text-foreground">{post.content}</p>
           ) : null}
-          <div className="text-muted-foreground flex flex-wrap items-center gap-1 text-xs">
+          <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
             <span>
               by{" "}
               <Link

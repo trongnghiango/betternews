@@ -52,7 +52,7 @@ function ErrorDetails({ error }: Pick<ErrorComponentProps, "error">) {
       <AccordionItem value="error-details">
         <AccordionTrigger>View error details</AccordionTrigger>
         <AccordionContent>
-          <dl className="bg-muted rounded-md p-4">
+          <dl className="rounded-md bg-muted p-4">
             <dt className="mb-2 font-semibold">Error Message:</dt>
             <dd className="mb-4 text-sm">{error.message}</dd>
             <dt className="mb-2 font-semibold">Stack Trace:</dt>

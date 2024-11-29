@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cx } from "@/lib/utils";
 import * as SeparatorPrimitive from "@radix-ui/react-separator";
 import {
   forwardRef,
@@ -18,8 +18,8 @@ export const Separator = forwardRef<
       ref={ref}
       decorative={decorative}
       orientation={orientation}
-      className={cn(
-        "bg-border shrink-0",
+      className={cx(
+        "shrink-0 bg-border",
         orientation === "horizontal" ? "h-px w-full" : "h-full w-px",
         className,
       )}

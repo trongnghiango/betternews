@@ -6,6 +6,7 @@ import {
 } from "@/shared/types";
 import {
   useMutation,
+  useQuery,
   useQueryClient,
   type InfiniteData,
 } from "@tanstack/react-query";
@@ -15,8 +16,15 @@ import {
   createComment,
   upvoteComment,
   upvotePost,
+  userQueryOptions,
   type GetPostsSuccessResponse,
 } from "./api";
+
+export function useUser() {
+  const userQueryResult = useQuery(userQueryOptions());
+
+  return userQueryResult.data;
+}
 
 export function useUpvotePostMutation() {
   const queryClient = useQueryClient();

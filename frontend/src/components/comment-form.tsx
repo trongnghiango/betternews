@@ -92,7 +92,7 @@ export function CommentForm({
         <form.Subscribe selector={(state) => [state.errorMap]}>
           {([errorMap]) =>
             errorMap.onSubmit ? (
-              <p className="text-destructive text-[0.8rem] font-medium">
+              <p className="text-[0.8rem] font-medium text-destructive">
                 {errorMap.onSubmit.toString()}
               </p>
             ) : null

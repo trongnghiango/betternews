@@ -3,12 +3,12 @@ import { CommentForm } from "@/components/comment-form";
 import { PostCard } from "@/components/post-card";
 import { SortBar } from "@/components/sort-bar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getPost, getPostComments, userQueryOptions } from "@/lib/api";
+import { getPost, getPostComments } from "@/lib/api";
+import { useUser } from "@/lib/api-hooks";
 import { OrderBySchema, SortBySchema } from "@/shared/types";
 import {
   infiniteQueryOptions,
   queryOptions,
-  useQuery,
   useSuspenseInfiniteQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
@@ -50,8 +50,7 @@ function Post() {
   );
   const postComments = postCommentsQueryResult.data;
 
-  const userQueryResult = useQuery(userQueryOptions());
-  const user = userQueryResult.data;
+  const user = useUser();
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -90,7 +89,7 @@ function Post() {
                 onClick={() => {
                   postCommentsQueryResult.fetchNextPage();
                 }}
-                className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs"
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
               >
                 <ChevronDownIcon size={12} />
                 {postCommentsQueryResult.isFetchingNextPage

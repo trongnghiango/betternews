@@ -7,7 +7,7 @@ export function FieldInfo({
   field: FieldApi<any, any, any, any, any>;
 }) {
   return field.state.meta.isTouched && field.state.meta.errors.length ? (
-    <p className="text-destructive text-[0.8rem] font-medium">
+    <p className="text-[0.8rem] font-medium text-destructive">
       {field.state.meta.errors.join(", ")}
     </p>
   ) : null;

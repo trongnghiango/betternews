@@ -80,7 +80,7 @@ function Signup() {
   });
 
   return (
-    <Card className="border-border/25 mx-auto mt-12 max-w-sm">
+    <Card className="mx-auto max-w-sm">
       <form
         onSubmit={async (e) => {
           e.preventDefault();
@@ -131,7 +131,7 @@ function Signup() {
             <form.Subscribe selector={(state) => [state.errorMap]}>
               {([errorMap]) =>
                 errorMap.onSubmit ? (
-                  <p className="text-destructive text-[0.8rem] font-medium">
+                  <p className="text-[0.8rem] font-medium text-destructive">
                     {errorMap.onSubmit.toString()}
                   </p>
                 ) : null
@@ -150,12 +150,12 @@ function Signup() {
               )}
             </form.Subscribe>
           </div>
-          <div className="mt-4 text-center text-sm">
+          <p className="mt-4 text-center text-sm">
             Already have an account?{" "}
             <Link to="/login" search={search} className="underline">
               Sign in
             </Link>
-          </div>
+          </p>
         </CardContent>
       </form>
     </Card>

@@ -71,7 +71,7 @@ function Submit() {
   });
 
   return (
-    <Card className="border-border/25 mx-auto mt-12 max-w-lg">
+    <Card className="mx-auto mt-12 max-w-lg border-border/25">
       <form
         onSubmit={async (e) => {
           e.preventDefault();
@@ -139,7 +139,7 @@ function Submit() {
             <form.Subscribe selector={(state) => [state.errorMap]}>
               {([errorMap]) =>
                 errorMap.onSubmit ? (
-                  <p className="text-destructive text-[0.8rem] font-medium">
+                  <p className="text-[0.8rem] font-medium text-destructive">
                     {errorMap.onSubmit.toString()}
                   </p>
                 ) : null

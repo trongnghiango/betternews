@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cx } from "@/lib/utils";
 import type { OrderBy, SortBy } from "@/shared/types";
 import { useNavigate } from "@tanstack/react-router";
 import { ArrowUpIcon } from "lucide-react";
@@ -28,7 +28,7 @@ export function SortBar({
           navigate({ to: ".", search: (prev) => ({ ...prev, sortBy }) })
         }
       >
-        <SelectTrigger className="bg-background w-[180px]">
+        <SelectTrigger className="w-[180px] bg-background">
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
         <SelectContent>
@@ -51,7 +51,7 @@ export function SortBar({
         aria-label={orderBy === "desc" ? "Sort Descending" : "Sort Ascending"}
       >
         <ArrowUpIcon
-          className={cn(
+          className={cx(
             "transition-transform duration-300",
             orderBy === "desc" ? "rotate-180" : "",
           )}

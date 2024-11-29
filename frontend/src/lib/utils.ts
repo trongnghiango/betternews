@@ -1,10 +1,14 @@
-import { clsx, type ClassValue } from "clsx";
+import { defineConfig } from "cva";
 import { DateTime } from "luxon";
 import { twMerge } from "tailwind-merge";
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+export type { VariantProps } from "cva";
+
+export const { cva, cx, compose } = defineConfig({
+  hooks: {
+    onComplete: (className) => twMerge(className),
+  },
+});
 
 export function relativeTime(date: string) {
   const dateTime = DateTime.fromISO(date);

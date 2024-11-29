@@ -1,9 +1,8 @@
-import { getCommentComments, userQueryOptions } from "@/lib/api";
-import { useUpvoteCommentMutation } from "@/lib/api-hooks";
-import { cn, relativeTime } from "@/lib/utils";
+import { getCommentComments } from "@/lib/api";
+import { useUpvoteCommentMutation, useUser } from "@/lib/api-hooks";
+import { cx, relativeTime } from "@/lib/utils";
 import type { Comment } from "@/shared/types";
 import {
-  useQuery,
   useQueryClient,
   useSuspenseInfiniteQuery,
 } from "@tanstack/react-query";
@@ -39,8 +38,7 @@ export function CommentCard({
 
   const queryClient = useQueryClient();
 
-  const userQueryResult = useQuery(userQueryOptions());
-  const user = userQueryResult.data;
+  const user = useUser();
 
   const commentCommentsQueryResult = useSuspenseInfiniteQuery({
     queryKey: ["comments", "comment", comment.id],
@@ -78,13 +76,13 @@ export function CommentCard({
 
   return (
     <div
-      className={cn(
-        depth > 0 ? "border-border ml-4 border-l pl-4" : "",
+      className={cx(
+        depth > 0 ? "ml-4 border-l border-border pl-4" : "",
         isDraft ? "pointer-events-none opacity-50" : "",
       )}
     >
       <div className="py-2">
-        <div className="text-muted-foreground flex items-center gap-1 text-xs">
+        <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <button
             disabled={!user}
             onClick={() =>
@@ -94,7 +92,7 @@ export function CommentCard({
                 parentCommentId: comment.parentCommentId,
               })
             }
-            className={cn(
+            className={cx(
               "inline-flex items-center gap-1 text-xs",
               isUpvoted ? "text-primary" : "hover:text-primary",
             )}
@@ -103,7 +101,7 @@ export function CommentCard({
             {comment.points}
           </button>
           <span>&middot;</span>
-          <span className="text-foreground font-medium">
+          <span className="font-medium text-foreground">
             {comment.author.username}
           </span>
           <span>&middot;</span>
@@ -125,7 +123,7 @@ export function CommentCard({
                   onClick={() =>
                     onActiveReplyIdChange(isReplying ? null : comment.id)
                   }
-                  className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs"
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
                 >
                   <MessageSquareIcon size={12} />
                   Reply
@@ -173,7 +171,7 @@ export function CommentCard({
                     await commentCommentsQueryResult.fetchNextPage();
                   }
                 }}
-                className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs"
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
               >
                 <ChevronDownIcon size={12} />
                 {commentCommentsQueryResult.isFetchingNextPage
