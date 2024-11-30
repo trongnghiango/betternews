@@ -38,9 +38,9 @@ function HomeComponent() {
   return (
     <div className="mx-auto max-w-3xl">
       <h1 className="text-2xl font-bold tracking-tight">Submissions</h1>
-      <div className="mt-8 space-y-4">
+      <div className="mt-8 grid gap-4">
         <SortBar sortBy={search.sortBy} orderBy={search.orderBy} />
-        <div className="space-y-3">
+        <div className="grid gap-3">
           {data.pages.map((page) =>
             page.data.map((post) => <PostCard key={post.id} post={post} />),
           )}

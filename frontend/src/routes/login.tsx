@@ -82,9 +82,10 @@ function LoginComponent() {
   return (
     <Card className="mx-auto max-w-sm">
       <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
+        onSubmit={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+
           void form.handleSubmit();
         }}
       >

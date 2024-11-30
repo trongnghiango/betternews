@@ -72,7 +72,7 @@ export function PostCard({ post }: { post: Post }) {
         </CardHeader>
         <CardContent className="p-3 pt-0">
           {post.content ? (
-            <div className="pt-2 text-sm text-foreground">{post.content}</div>
+            <div className="pt-2 text-foreground">{post.content}</div>
           ) : null}
         </CardContent>
       </div>
@@ -91,11 +91,12 @@ function PostUpvoteToggle({
 
   return (
     <Toggle
+      size="sm"
       pressed={post.isUpvoted}
       disabled={!user}
-      onClick={() => upvotePostMutation.mutate(String(post.id))}
-      className="h-11 min-w-8 flex-col gap-0.5 data-[state=on]:bg-transparent data-[state=on]:text-primary data-[state=on]:hover:bg-muted"
-      aria-label="Toggle upvote"
+      onClick={() => upvotePostMutation.mutate({ id: post.id })}
+      className="h-11 min-w-8 flex-col gap-0.5 hover:bg-transparent data-[state=on]:bg-transparent data-[state=on]:text-primary"
+      aria-label="Toggle post upvote"
     >
       <ChevronUpIcon />
       <span className="text-xs">{post.points}</span>

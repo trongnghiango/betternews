@@ -96,7 +96,7 @@ function Header() {
             {user ? (
               <UserDropdown />
             ) : (
-              <Button asChild variant="secondary" size="sm">
+              <Button asChild size="sm" variant="secondary">
                 <Link to="/login">Sign in</Link>
               </Button>
             )}
@@ -132,8 +132,8 @@ function UserDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="secondary"
           size="icon"
+          variant="secondary"
           className="rounded-full [&_svg]:size-5 [&_svg]:shrink-0"
         >
           <CircleUserIcon />
@@ -161,7 +161,7 @@ function MobileNav() {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="secondary" size="icon" className="md:hidden">
+        <Button size="icon" variant="secondary" className="md:hidden">
           <MenuIcon />
         </Button>
       </SheetTrigger>

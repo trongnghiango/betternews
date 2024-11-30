@@ -30,16 +30,14 @@ export function useUpvotePostMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: upvotePost,
-    onMutate: async (variables) => {
-      const postId = Number(variables);
-
+    mutationFn: ({ id }: { id: number }) => upvotePost(String(id)),
+    onMutate: async ({ id }) => {
       let prevData: InfiniteData<GetPostsSuccessResponse> | undefined;
 
-      await queryClient.cancelQueries({ queryKey: ["post", Number(postId)] });
+      await queryClient.cancelQueries({ queryKey: ["post", id] });
 
       queryClient.setQueryData<SuccessResponse<Post>>(
-        ["post", postId],
+        ["post", id],
         produce((draft) => {
           if (!draft) {
             return undefined;
@@ -60,7 +58,7 @@ export function useUpvotePostMutation() {
 
           for (const page of oldData.pages) {
             for (const post of page.data) {
-              if (post.id === postId) {
+              if (post.id === id) {
                 post.points += post.isUpvoted ? -1 : 1;
                 post.isUpvoted = !post.isUpvoted;
               }
@@ -71,11 +69,9 @@ export function useUpvotePostMutation() {
 
       return { prevData };
     },
-    onSuccess: async (data, variables) => {
-      const postId = Number(variables);
-
+    onSuccess: async (data, { id }) => {
       queryClient.setQueryData<SuccessResponse<Post>>(
-        ["post", postId],
+        ["post", id],
         produce((draft) => {
           if (!draft) {
             return undefined;
@@ -95,7 +91,7 @@ export function useUpvotePostMutation() {
 
           for (const page of oldData.pages) {
             for (const post of page.data) {
-              if (post.id === postId) {
+              if (post.id === id) {
                 post.points = data.data.count;
                 post.isUpvoted = data.data.isUpvoted;
               }
@@ -110,10 +106,8 @@ export function useUpvotePostMutation() {
         refetchType: "none",
       });
     },
-    onError: async (_error, variables, context) => {
-      const postId = Number(variables);
-
-      await queryClient.invalidateQueries({ queryKey: ["post", postId] });
+    onError: async (_error, { id }, context) => {
+      await queryClient.invalidateQueries({ queryKey: ["post", id] });
 
       toast.error("Failed to upvote post");
 
@@ -135,10 +129,10 @@ export function useUpvoteCommentMutation() {
     mutationFn: ({
       id,
     }: {
-      id: string;
+      id: number;
       parentCommentId: number | null;
       postId: number;
-    }) => upvoteComment(id),
+    }) => upvoteComment(String(id)),
     onMutate: async ({ id, parentCommentId, postId }) => {
       let prevData:
         | InfiniteData<SuccessResponseWithPagination<Comment[]>>
@@ -162,7 +156,7 @@ export function useUpvoteCommentMutation() {
 
           for (const page of oldData.pages) {
             for (const comment of page.data) {
-              if (String(comment.id) === id) {
+              if (comment.id === id) {
                 const isUpvoted = comment.commentUpvotes.length > 0;
                 comment.points += isUpvoted ? -1 : 1;
                 comment.commentUpvotes = isUpvoted ? [] : [{ userId: "" }];
@@ -190,7 +184,7 @@ export function useUpvoteCommentMutation() {
 
           for (const page of oldData.pages) {
             for (const comment of page.data) {
-              if (String(comment.id) === id) {
+              if (comment.id === id) {
                 comment.points = data.data.count;
                 comment.commentUpvotes = data.data.commentUpvotes;
               }
@@ -228,18 +222,18 @@ export function useCreateCommentMutation() {
       content,
       isParent,
     }: {
-      id: string;
+      id: number;
       content: string;
       isParent?: boolean;
-    }) => createComment(id, content, isParent),
+    }) => createComment(String(id), content, isParent),
     onMutate: ({ id, content, isParent }) => {
       let prevData:
         | InfiniteData<SuccessResponseWithPagination<Comment[]>>
         | undefined;
 
       const queryKey = isParent
-        ? ["comments", "comment", Number(id)]
-        : ["comments", "post", Number(id)];
+        ? ["comments", "comment", id]
+        : ["comments", "post", id];
 
       const user = queryClient.getQueryData<string>(["user"]);
 
@@ -261,7 +255,7 @@ export function useCreateCommentMutation() {
               points: 0,
               commentCount: 0,
               createdAt: new Date().toISOString(),
-              postId: Number(id),
+              postId: id,
               parentCommentId: null,
               depth: 0,
               commentUpvotes: [],
@@ -280,8 +274,8 @@ export function useCreateCommentMutation() {
     },
     onSuccess: async (data, { id, isParent }) => {
       const queryKey = isParent
-        ? ["comments", "comment", Number(id)]
-        : ["comments", "post", Number(id)];
+        ? ["comments", "comment", id]
+        : ["comments", "post", id];
 
       if (data.success) {
         await queryClient.invalidateQueries({
@@ -309,8 +303,8 @@ export function useCreateCommentMutation() {
     },
     onError: async (_error, { id, isParent }) => {
       const queryKey = isParent
-        ? ["comments", "comment", Number(id)]
-        : ["comments", "post", Number(id)];
+        ? ["comments", "comment", id]
+        : ["comments", "post", id];
 
       toast.error("Failed to create comment");
 

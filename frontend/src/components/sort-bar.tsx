@@ -40,8 +40,8 @@ export function SortBar({
         </SelectContent>
       </Select>
       <Button
-        variant="outline"
         size="icon"
+        variant="outline"
         onClick={() =>
           navigate({
             to: ".",

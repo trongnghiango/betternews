@@ -27,13 +27,13 @@ export function CommentForm({
     },
     validatorAdapter: zodValidator(),
     validators: {
-      onChange: CreateCommentSchema,
+      onSubmit: CreateCommentSchema,
     },
     onSubmit: async ({ value }) => {
       const { content } = value;
 
       await createCommentMutation.mutateAsync(
-        { id: String(id), content, isParent },
+        { id, content, isParent },
         {
           onSuccess: (data) => {
             if (data.success) {
@@ -51,7 +51,7 @@ export function CommentForm({
               }
 
               form.setErrorMap({
-                onSubmit: data.isFormError ? data.error : "Unexpected error",
+                onServer: data.isFormError ? data.error : "Unexpected error",
               });
             }
           },
@@ -62,14 +62,14 @@ export function CommentForm({
 
   return (
     <form
-      onSubmit={async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
 
-        await form.handleSubmit();
+        void form.handleSubmit();
       }}
     >
-      <div className="grid gap-2">
+      <div className="grid gap-4">
         <form.Field name="content">
           {(field) => (
             <div className="grid gap-2">
@@ -79,8 +79,8 @@ export function CommentForm({
                 name={field.name}
                 value={field.state.value}
                 onBlur={field.handleBlur}
-                rows={4}
                 onChange={(event) => field.handleChange(event.target.value)}
+                rows={4}
                 className="resize-none"
                 placeholder="What are you thoughts?"
                 aria-label="Content"
@@ -91,9 +91,9 @@ export function CommentForm({
         </form.Field>
         <form.Subscribe selector={(state) => [state.errorMap]}>
           {([errorMap]) =>
-            errorMap.onSubmit ? (
+            errorMap.onServer ? (
               <p className="text-[0.8rem] font-medium text-destructive">
-                {errorMap.onSubmit.toString()}
+                {errorMap.onServer.toString()}
               </p>
             ) : null
           }
