@@ -79,10 +79,13 @@ export type Comment = {
 export const LoginSchema = z.object({
   username: z
     .string()
-    .min(3)
-    .max(31)
-    .regex(/^[a-zA-Z0-9_]+$/),
-  password: z.string().min(3).max(255),
+    .min(3, "Username is too short")
+    .max(31, "Username is too long")
+    .regex(/^[a-zA-Z0-9_]+$/, "Username is invalid"),
+  password: z
+    .string()
+    .min(3, "Password is too short")
+    .max(255, "Password is too long"),
 });
 
 export const InsertPostSchema = createInsertSchema(postsTable, {

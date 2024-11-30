@@ -1,4 +1,4 @@
-import { FieldInfo } from "@/components/field-info";
+import { FieldErrorList } from "@/components/field-error-list";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -101,7 +101,7 @@ function Submit() {
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
                   />
-                  <FieldInfo field={field} />
+                  <FieldErrorList field={field} />
                 </div>
               )}
             </form.Field>
@@ -117,7 +117,7 @@ function Submit() {
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
                   />
-                  <FieldInfo field={field} />
+                  <FieldErrorList field={field} />
                 </div>
               )}
             </form.Field>
@@ -132,7 +132,7 @@ function Submit() {
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
                   />
-                  <FieldInfo field={field} />
+                  <FieldErrorList field={field} />
                 </div>
               )}
             </form.Field>

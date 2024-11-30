@@ -4,7 +4,7 @@ import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useRef } from "react";
 import { toast } from "sonner";
-import { FieldInfo } from "./field-info";
+import { FieldErrorList } from "./field-error-list";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 
@@ -85,7 +85,7 @@ export function CommentForm({
                 placeholder="What are you thoughts?"
                 aria-label="Content"
               />
-              <FieldInfo field={field} />
+              <FieldErrorList field={field} />
             </div>
           )}
         </form.Field>

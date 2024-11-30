@@ -1,4 +1,4 @@
-import { FieldInfo } from "@/components/field-info";
+import { FieldErrorList } from "@/components/field-error-list";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -29,7 +29,7 @@ const LoginSearchSchema = z.object({
 });
 
 export const Route = createFileRoute("/login")({
-  component: Login,
+  component: LoginComponent,
   validateSearch: zodSearchValidator(LoginSearchSchema),
   beforeLoad: async ({ context, search }) => {
     const user = await context.queryClient.ensureQueryData(userQueryOptions());
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/login")({
   },
 });
 
-function Login() {
+function LoginComponent() {
   const queryClient = useQueryClient();
 
   const router = useRouter();
@@ -54,7 +54,7 @@ function Login() {
     },
     validatorAdapter: zodValidator(),
     validators: {
-      onChange: LoginSchema,
+      onSubmit: LoginSchema,
     },
     onSubmit: async ({ value }) => {
       const { username, password } = value;
@@ -73,7 +73,7 @@ function Login() {
         }
 
         form.setErrorMap({
-          onSubmit: res.isFormError ? res.error : "Unexpected error",
+          onServer: res.isFormError ? res.error : "Unexpected error",
         });
       }
     },
@@ -82,10 +82,10 @@ function Login() {
   return (
     <Card className="mx-auto max-w-sm">
       <form
-        onSubmit={async (e) => {
+        onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          await form.handleSubmit();
+          void form.handleSubmit();
         }}
       >
         <CardHeader>
@@ -108,7 +108,7 @@ function Login() {
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
                   />
-                  <FieldInfo field={field} />
+                  <FieldErrorList field={field} />
                 </div>
               )}
             </form.Field>
@@ -124,15 +124,15 @@ function Login() {
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
                   />
-                  <FieldInfo field={field} />
+                  <FieldErrorList field={field} />
                 </div>
               )}
             </form.Field>
             <form.Subscribe selector={(state) => [state.errorMap]}>
               {([errorMap]) =>
-                errorMap.onSubmit ? (
+                errorMap.onServer ? (
                   <p className="text-[0.8rem] font-medium text-destructive">
-                    {errorMap.onSubmit.toString()}
+                    {errorMap.onServer.toString()}
                   </p>
                 ) : null
               }
