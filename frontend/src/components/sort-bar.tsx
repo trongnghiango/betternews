@@ -21,15 +21,18 @@ export function SortBar({
   const navigate = useNavigate();
 
   return (
-    <div className="mb-4 flex items-center justify-between">
+    <div className="flex items-center justify-between gap-2">
       <Select
         value={sortBy}
         onValueChange={(sortBy: SortBy) =>
-          navigate({ to: ".", search: (prev) => ({ ...prev, sortBy }) })
+          navigate({ to: ".", search: (prev: any) => ({ ...prev, sortBy }) })
         }
       >
-        <SelectTrigger className="w-[180px] bg-background">
-          <SelectValue placeholder="Sort by" />
+        <SelectTrigger
+          aria-label={sortBy === "points" ? "Sort by Points" : "Sort by Recent"}
+          className="w-[180px] bg-background"
+        >
+          <SelectValue />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="points">Points</SelectItem>
@@ -42,7 +45,7 @@ export function SortBar({
         onClick={() =>
           navigate({
             to: ".",
-            search: (prev) => ({
+            search: (prev: any) => ({
               ...prev,
               orderBy: orderBy === "asc" ? "desc" : "asc",
             }),

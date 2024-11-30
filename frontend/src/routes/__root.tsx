@@ -96,7 +96,7 @@ function Header() {
             {user ? (
               <UserDropdown />
             ) : (
-              <Button asChild size="sm" variant="secondary">
+              <Button asChild variant="secondary" size="sm">
                 <Link to="/login">Sign in</Link>
               </Button>
             )}

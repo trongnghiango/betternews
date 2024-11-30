@@ -36,27 +36,28 @@ function HomeComponent() {
     useSuspenseInfiniteQuery(postsInfiniteQueryOptions(search));
 
   return (
-    <div className="mx-auto max-w-3xl p-4">
-      <h1 className="text-2xl font-bold">Submissions</h1>
-      <div className="mt-6">
+    <div className="mx-auto max-w-3xl">
+      <h1 className="text-2xl font-bold tracking-tight">Submissions</h1>
+      <div className="mt-8 space-y-4">
         <SortBar sortBy={search.sortBy} orderBy={search.orderBy} />
-      </div>
-      <div className="space-y-4">
-        {data.pages.map((page) =>
-          page.data.map((post) => <PostCard key={post.id} post={post} />),
-        )}
-      </div>
-      <div className="mt-6">
-        <Button
-          onClick={() => fetchNextPage()}
-          disabled={!hasNextPage || isFetchingNextPage}
-        >
-          {isFetchingNextPage
-            ? "Loading more…"
-            : hasNextPage
-              ? "Load more"
-              : "Nothing more to load…"}
-        </Button>
+        <div className="space-y-3">
+          {data.pages.map((page) =>
+            page.data.map((post) => <PostCard key={post.id} post={post} />),
+          )}
+        </div>
+        <div>
+          <Button
+            size="sm"
+            disabled={!hasNextPage || isFetchingNextPage}
+            onClick={() => fetchNextPage()}
+          >
+            {isFetchingNextPage
+              ? "Loading more…"
+              : hasNextPage
+                ? "Load more"
+                : "Nothing more to load…"}
+          </Button>
+        </div>
       </div>
     </div>
   );
