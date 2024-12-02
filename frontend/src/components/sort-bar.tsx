@@ -29,8 +29,8 @@ export function SortBar({
         }
       >
         <SelectTrigger
-          aria-label={sortBy === "points" ? "Sort by Points" : "Sort by Recent"}
           className="w-[180px] bg-background"
+          aria-label={sortBy === "points" ? "Sort by Points" : "Sort by Recent"}
         >
           <SelectValue />
         </SelectTrigger>

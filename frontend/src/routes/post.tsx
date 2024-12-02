@@ -1,9 +1,9 @@
 import { CommentCard } from "@/components/comment-card";
 import { CommentForm } from "@/components/comment-form";
-import { MoreReplies } from "@/components/more-creplies";
+import { MoreRepliesButton } from "@/components/more-creplies-button";
 import { PostCard } from "@/components/post-card";
 import { SortBar } from "@/components/sort-bar";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPost, getPostComments } from "@/lib/api";
 import { useUser } from "@/lib/api-hooks";
 import { OrderBySchema, SortBySchema } from "@/shared/types";
@@ -54,28 +54,31 @@ function PostComponent() {
   const [activeReplyId, setActiveReplyId] = useState<number | null>(null);
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-3xl py-10">
       <h1 className="sr-only">{post.title}</h1>
-      <div className="grid gap-8">
+      <div className="space-y-8">
         <PostCard post={post} />
         {user ? (
-          <div className="grid gap-4">
-            <h2 className="text-lg font-medium">Add Comment</h2>
-            <Card>
-              <CardContent className="pt-6">
-                <CommentForm id={id} />
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle asChild>
+                <h2>Add Comment</h2>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CommentForm id={id} />
+            </CardContent>
+          </Card>
         ) : null}
-        <div className="grid gap-4">
-          <h2 className="text-lg font-medium">Comments</h2>
+        <div className="space-y-4">
+          <h2 className="font-semibold leading-none tracking-tight">
+            Comments
+          </h2>
           <SortBar sortBy={sortBy} orderBy={orderBy} />
           <Card>
-            <CardContent>
-              {postComments.pages[0].data.length ? (
-                <div className="mt-4">
-                  {postComments.pages.map((page) =>
+            <CardContent className="space-y-2 py-4">
+              {postComments.pages[0].data.length
+                ? postComments.pages.map((page) =>
                     page.data.map((comment, index) => (
                       <CommentCard
                         key={comment.id}
@@ -86,18 +89,15 @@ function PostComponent() {
                         isLast={index === page.data.length - 1}
                       />
                     )),
-                  )}
-                </div>
-              ) : null}
+                  )
+                : null}
               {postCommentsQuery.hasNextPage ? (
-                <div className="mt-2">
-                  <MoreReplies
-                    disabled={postCommentsQuery.isFetchingNextPage}
-                    onClick={() => {
-                      postCommentsQuery.fetchNextPage();
-                    }}
-                  />
-                </div>
+                <MoreRepliesButton
+                  disabled={postCommentsQuery.isFetchingNextPage}
+                  onClick={() => {
+                    postCommentsQuery.fetchNextPage();
+                  }}
+                />
               ) : null}
             </CardContent>
           </Card>

@@ -36,7 +36,7 @@ function HomeComponent() {
     useSuspenseInfiniteQuery(postsInfiniteQueryOptions(search));
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-3xl py-10">
       <h1 className="text-2xl font-bold tracking-tight">Submissions</h1>
       <div className="mt-8 grid gap-4">
         <SortBar sortBy={search.sortBy} orderBy={search.orderBy} />

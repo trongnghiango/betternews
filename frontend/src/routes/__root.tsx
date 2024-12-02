@@ -33,9 +33,9 @@ const navigation: {
   to: LinkComponentProps["to"];
   search?: LinkComponentProps["search"];
 }[] = [
+  { name: "Top", to: "/", search: { sortBy: "points", orderBy: "desc" } },
   { name: "Newest", to: "/", search: { sortBy: "recent", orderBy: "desc" } },
-  { name: "Top rated", to: "/", search: { sortBy: "points", orderBy: "desc" } },
-  { name: "Submit new", to: "/submit" },
+  { name: "Submit", to: "/submit" },
 ];
 
 interface RouterContext {
@@ -51,7 +51,7 @@ function RootComponent() {
     <>
       <div className="isolate flex min-h-screen flex-col bg-[#f5f5ed]">
         <Header />
-        <main className="grow py-10">
+        <main className="grow">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <Outlet />
           </div>
@@ -103,7 +103,7 @@ function Header() {
           </div>
           <MobileNav />
         </div>
-        <nav className="-mb-px flex gap-8 border-t border-t-border max-md:hidden">
+        <nav className="-mb-px flex gap-6 border-t border-border max-md:hidden">
           {navigation.map((item) => (
             <Link
               key={item.name}
@@ -113,7 +113,7 @@ function Header() {
               activeProps={{ className: "border-primary text-primary" }}
               inactiveProps={{
                 className:
-                  "text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground border-transparent",
+                  "border-transparent text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground",
               }}
             >
               {item.name}
@@ -141,8 +141,9 @@ function UserDropdown() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel className="text-muted-foreground">
-          Signed in as <span className="text-foreground">{user}</span>
+        <DropdownMenuLabel className="font-normal text-muted-foreground">
+          Signed in as{" "}
+          <span className="font-medium text-foreground">{user}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>

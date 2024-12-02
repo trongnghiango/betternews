@@ -56,7 +56,7 @@ function Submit() {
         }
 
         form.setErrorMap({
-          onSubmit: res.isFormError ? res.error : "Unexpected error",
+          onServer: res.isFormError ? res.error : "Unexpected error",
         });
       }
     },
@@ -71,95 +71,106 @@ function Submit() {
   });
 
   return (
-    <Card className="mx-auto mt-12 max-w-lg border-border/25">
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          await form.handleSubmit();
-        }}
-      >
-        <CardHeader>
-          <CardTitle>Create New Post</CardTitle>
-          <CardDescription>
-            Leave url blank to submit a question for discussion. If there is no
-            url, text will appear at the top of the thread. If there is a url,
-            text is optional.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4">
-            <form.Field name="title">
-              {(field) => (
-                <div className="grid gap-2">
-                  <Label htmlFor={field.name}>Title</Label>
-                  <Input
-                    type="text"
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                  />
-                  <FieldErrorList field={field} />
-                </div>
-              )}
-            </form.Field>
-            <form.Field name="url">
-              {(field) => (
-                <div className="grid gap-2">
-                  <Label htmlFor={field.name}>URL</Label>
-                  <Input
-                    type="url"
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                  />
-                  <FieldErrorList field={field} />
-                </div>
-              )}
-            </form.Field>
-            <form.Field name="content">
-              {(field) => (
-                <div className="grid gap-2">
-                  <Label htmlFor={field.name}>Content</Label>
-                  <Textarea
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => field.handleChange(event.target.value)}
-                  />
-                  <FieldErrorList field={field} />
-                </div>
-              )}
-            </form.Field>
-            <form.Subscribe selector={(state) => [state.errorMap]}>
-              {([errorMap]) =>
-                errorMap.onSubmit ? (
-                  <p className="text-[0.8rem] font-medium text-destructive">
-                    {errorMap.onSubmit.toString()}
-                  </p>
-                ) : null
-              }
-            </form.Subscribe>
-            <form.Subscribe
-              selector={(state) => [state.canSubmit, state.isSubmitting]}
-            >
-              {([canSubmit, isSubmitting]) => (
-                <Button
-                  disabled={!canSubmit || isSubmitting}
-                  className="w-full"
-                >
-                  {isSubmitting ? "Submitting…" : "Submit"}
-                </Button>
-              )}
-            </form.Subscribe>
-          </div>
-        </CardContent>
-      </form>
-    </Card>
+    <div className="mx-auto max-w-lg py-10">
+      <Card>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            void form.handleSubmit();
+          }}
+        >
+          <CardHeader>
+            <CardTitle asChild>
+              <h1>Create New Post</h1>
+            </CardTitle>
+            <CardDescription>
+              Leave url blank to submit a question for discussion. If there is
+              no url, text will appear at the top of the thread. If there is a
+              url, text is optional.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              <form.Field name="title">
+                {(field) => (
+                  <div className="grid gap-2">
+                    <Label htmlFor={field.name}>Title</Label>
+                    <Input
+                      type="text"
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(event) =>
+                        field.handleChange(event.target.value)
+                      }
+                    />
+                    <FieldErrorList field={field} />
+                  </div>
+                )}
+              </form.Field>
+              <form.Field name="url">
+                {(field) => (
+                  <div className="grid gap-2">
+                    <Label htmlFor={field.name}>URL</Label>
+                    <Input
+                      type="url"
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(event) =>
+                        field.handleChange(event.target.value)
+                      }
+                    />
+                    <FieldErrorList field={field} />
+                  </div>
+                )}
+              </form.Field>
+              <form.Field name="content">
+                {(field) => (
+                  <div className="grid gap-2">
+                    <Label htmlFor={field.name}>Content</Label>
+                    <Textarea
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(event) =>
+                        field.handleChange(event.target.value)
+                      }
+                    />
+                    <FieldErrorList field={field} />
+                  </div>
+                )}
+              </form.Field>
+              <form.Subscribe selector={(state) => [state.errorMap]}>
+                {([errorMap]) =>
+                  errorMap.onServer ? (
+                    <p className="text-[0.8rem] font-medium text-destructive">
+                      {errorMap.onServer.toString()}
+                    </p>
+                  ) : null
+                }
+              </form.Subscribe>
+              <form.Subscribe
+                selector={(state) => [state.canSubmit, state.isSubmitting]}
+              >
+                {([canSubmit, isSubmitting]) => (
+                  <Button
+                    disabled={!canSubmit || isSubmitting}
+                    className="w-full"
+                  >
+                    {isSubmitting ? "Submitting…" : "Submit"}
+                  </Button>
+                )}
+              </form.Subscribe>
+            </div>
+          </CardContent>
+        </form>
+      </Card>
+    </div>
   );
 }

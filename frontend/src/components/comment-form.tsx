@@ -2,7 +2,7 @@ import { useCreateCommentMutation } from "@/lib/api-hooks";
 import { CreateCommentSchema } from "@/shared/types";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { FieldErrorList } from "./field-error-list";
 import { Button } from "./ui/button";
@@ -20,6 +20,12 @@ export function CommentForm({
   const createCommentMutation = useCreateCommentMutation();
 
   const contentRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (isParent) {
+      contentRef.current?.focus();
+    }
+  }, [isParent]);
 
   const form = useForm({
     defaultValues: {
@@ -69,10 +75,10 @@ export function CommentForm({
         void form.handleSubmit();
       }}
     >
-      <div className="grid gap-4">
-        <form.Field name="content">
-          {(field) => (
-            <div className="grid gap-2">
+      <div className="relative">
+        <div className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring">
+          <form.Field name="content">
+            {(field) => (
               <Textarea
                 ref={contentRef}
                 id={field.name}
@@ -80,36 +86,42 @@ export function CommentForm({
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(event) => field.handleChange(event.target.value)}
-                rows={4}
-                className="resize-none"
+                rows={3}
+                className="resize-none scroll-py-3 border-0 p-3 shadow-none focus-visible:ring-0"
                 placeholder="What are you thoughts?"
                 aria-label="Content"
               />
-              <FieldErrorList field={field} />
-            </div>
-          )}
-        </form.Field>
-        <form.Subscribe selector={(state) => [state.errorMap]}>
-          {([errorMap]) =>
-            errorMap.onServer ? (
-              <p className="text-[0.8rem] font-medium text-destructive">
-                {errorMap.onServer.toString()}
-              </p>
-            ) : null
-          }
-        </form.Subscribe>
-        <div className="flex justify-end">
+            )}
+          </form.Field>
+          {/* Spacer element to match the height of the toolbar */}
+          <div className="py-2" aria-hidden>
+            <div className="h-9" />
+          </div>
+        </div>
+        <div className="absolute inset-x-0 bottom-0 flex justify-end px-3 py-2">
           <form.Subscribe
             selector={(state) => [state.canSubmit, state.isSubmitting]}
           >
             {([canSubmit, isSubmitting]) => (
               <Button disabled={!canSubmit || isSubmitting}>
-                {isSubmitting ? "Saving…" : "Save"}
+                {isSubmitting ? "Posting…" : "Post"}
               </Button>
             )}
           </form.Subscribe>
         </div>
       </div>
+      <form.Field name="content">
+        {(field) => <FieldErrorList field={field} className="mt-2" />}
+      </form.Field>
+      <form.Subscribe selector={(state) => [state.errorMap]}>
+        {([errorMap]) =>
+          errorMap.onServer ? (
+            <p className="mt-2 text-[0.8rem] font-medium text-destructive">
+              {errorMap.onServer.toString()}
+            </p>
+          ) : null
+        }
+      </form.Subscribe>
     </form>
   );
 }

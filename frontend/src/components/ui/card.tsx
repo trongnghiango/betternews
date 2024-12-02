@@ -1,4 +1,5 @@
 import { cx } from "@/lib/utils";
+import { Slot } from "@radix-ui/react-slot";
 import { forwardRef, type HTMLAttributes } from "react";
 
 export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
@@ -29,14 +30,20 @@ CardHeader.displayName = "CardHeader";
 
 export const CardTitle = forwardRef<
   HTMLDivElement,
-  HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cx("font-semibold leading-none tracking-tight", className)}
-    {...props}
-  />
-));
+  HTMLAttributes<HTMLDivElement> & {
+    asChild?: boolean;
+  }
+>(({ className, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "div";
+
+  return (
+    <Comp
+      ref={ref}
+      className={cx("font-semibold leading-none tracking-tight", className)}
+      {...props}
+    />
+  );
+});
 CardTitle.displayName = "CardTitle";
 
 export const CardDescription = forwardRef<

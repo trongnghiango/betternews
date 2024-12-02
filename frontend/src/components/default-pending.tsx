@@ -2,9 +2,9 @@ import { Loader2Icon } from "lucide-react";
 
 export function DefaultPending() {
   return (
-    <div className="mx-auto mt-8 flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center gap-2 py-10">
       <Loader2Icon className="animate-spin" />
-      <p className="mt-2 text-sm text-muted-foreground">Loading…</p>
+      <p className="text-sm text-muted-foreground">Loading…</p>
     </div>
   );
 }

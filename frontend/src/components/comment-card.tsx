@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { CommentForm } from "./comment-form";
-import { MoreReplies } from "./more-creplies";
+import { MoreRepliesButton } from "./more-creplies-button";
 import { Separator } from "./ui/separator";
 import { Toggle } from "./ui/toggle";
 
@@ -81,44 +81,53 @@ export function CommentCard({
       )}
     >
       <div className="py-2">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 text-xs/5 text-muted-foreground">
           <CommentUpvoteToggle comment={comment} />
-          <span aria-hidden>&middot;</span>
-          <span className="font-medium text-foreground">
+          <svg viewBox="0 0 2 2" className="size-0.5 fill-current" aria-hidden>
+            <circle r={1} cx={1} cy={1} />
+          </svg>
+          <p className="whitespace-nowrap font-medium text-foreground">
             {comment.author.username}
-          </span>
-          <span aria-hidden>&middot;</span>
-          <span>{relativeTime(comment.createdAt)}</span>
-          <span aria-hidden>&middot;</span>
-          <CommentViewToggle
-            state={isCollapsed}
-            onToggle={() => setIsCollapsed(!isCollapsed)}
-          />
+          </p>
+          <svg viewBox="0 0 2 2" className="size-0.5 fill-current" aria-hidden>
+            <circle r={1} cx={1} cy={1} />
+          </svg>
+          <p className="whitespace-nowrap">{relativeTime(comment.createdAt)}</p>
+          <svg viewBox="0 0 2 2" className="size-0.5 fill-current" aria-hidden>
+            <circle r={1} cx={1} cy={1} />
+          </svg>
+          <Toggle
+            pressed={isCollapsed}
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="h-auto min-w-0 px-0 text-muted-foreground hover:bg-transparent hover:text-foreground data-[state=on]:bg-transparent"
+            aria-label={isCollapsed ? "Expand comment" : "Collapse comment"}
+          >
+            {isCollapsed ? <PlusIcon /> : <MinusIcon />}
+          </Toggle>
         </div>
         {!isCollapsed ? (
-          <div className="mt-2">
-            <div>{comment.content}</div>
+          <div className="mt-2 space-y-2">
+            <div className="text-sm">{comment.content}</div>
             {user ? (
-              <div className="mt-2 grid gap-2">
-                <button
+              <>
+                <Toggle
+                  pressed={isReplying}
                   onClick={() =>
                     onActiveReplyIdChange(isReplying ? null : comment.id)
                   }
-                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                  className="h-auto min-w-0 gap-1 px-0 text-xs font-normal text-muted-foreground hover:bg-transparent hover:text-foreground data-[state=on]:bg-transparent [&_svg]:size-3"
                 >
-                  <MessageSquareIcon size={12} />
+                  <MessageSquareIcon />
                   Reply
-                </button>
+                </Toggle>
                 {isReplying ? (
-                  <div className="mt-2">
-                    <CommentForm
-                      id={comment.id}
-                      isParent
-                      onSuccess={() => onActiveReplyIdChange(null)}
-                    />
-                  </div>
+                  <CommentForm
+                    id={comment.id}
+                    isParent
+                    onSuccess={() => onActiveReplyIdChange(null)}
+                  />
                 ) : null}
-              </div>
+              </>
             ) : null}
           </div>
         ) : null}
@@ -140,24 +149,22 @@ export function CommentCard({
             ));
           })}
           {commentCommentsQuery.hasNextPage || shouldRefetchFirstPage ? (
-            <div className="mt-2">
-              <MoreReplies
-                disabled={commentCommentsQuery.isFetchingNextPage}
-                onClick={async () => {
-                  if (shouldRefetchFirstPage) {
-                    await queryClient.invalidateQueries({
-                      queryKey: ["comments", "comment", comment.id],
-                    });
-                  } else {
-                    await commentCommentsQuery.fetchNextPage();
-                  }
-                }}
-              />
-            </div>
+            <MoreRepliesButton
+              disabled={commentCommentsQuery.isFetchingNextPage}
+              onClick={async () => {
+                if (shouldRefetchFirstPage) {
+                  await queryClient.invalidateQueries({
+                    queryKey: ["comments", "comment", comment.id],
+                  });
+                } else {
+                  await commentCommentsQuery.fetchNextPage();
+                }
+              }}
+            />
           ) : null}
         </>
       ) : null}
-      {!isLast ? <Separator className="my-2" /> : null}
+      {!isLast ? <Separator /> : null}
     </div>
   );
 }
@@ -187,30 +194,11 @@ function CommentUpvoteToggle({
           parentCommentId: comment.parentCommentId,
         })
       }
-      className="h-auto min-w-0 gap-1 p-0 hover:bg-transparent data-[state=on]:bg-transparent data-[state=on]:text-primary"
+      className="h-auto min-w-0 gap-1 px-0 hover:bg-transparent hover:text-primary data-[state=on]:bg-transparent data-[state=on]:text-primary"
       aria-label="Toggle comment upvote"
     >
       <ChevronUpIcon />
       <span className="text-xs">{comment.points}</span>
-    </Toggle>
-  );
-}
-
-function CommentViewToggle({
-  state,
-  onToggle,
-}: {
-  state: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <Toggle
-      pressed={state}
-      onClick={onToggle}
-      className="h-auto min-w-0 p-0 hover:bg-transparent data-[state=on]:bg-transparent"
-      aria-label={state ? "Expand comment" : "Collapse comment"}
-    >
-      {state ? <PlusIcon /> : <MinusIcon />}
     </Toggle>
   );
 }
