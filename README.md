@@ -2,7 +2,7 @@
 
 This project is a full-stack clone of [Hacker News](https://news.ycombinator.com/), that implements the core features like posting, commenting (with nested comments), and username/password authentication. I've deployed this project on [Fly.io](https://fly.io/), but deployment with Docker is also supported.
 
-![](./preview.png)
+![](https://github.com/user-attachments/assets/1817a1f6-8509-4d27-9a0f-48252fc0ceb5)
 
 ## Tech Stack
 
