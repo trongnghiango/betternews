@@ -2,6 +2,8 @@
 
 This project is a full-stack clone of [Hacker News](https://news.ycombinator.com/), that implements the core features like posting, commenting (with nested comments), and username/password authentication. I've deployed this project on [Fly.io](https://fly.io/), but deployment with Docker is also supported.
 
+![](./preview.png)
+
 ## Tech Stack
 
 - [Hono](https://hono.dev/docs/api/routing) - backend server (like Express.js, but faster)
@@ -11,8 +13,6 @@ This project is a full-stack clone of [Hacker News](https://news.ycombinator.com
 - [Tanstack Router, Query, and Form](https://tanstack.com/) - Tanstack Query is a data management library and Tanstack Form is a form state manager
 - Zod - validations
 - TypeScript - static typing for JavaScript
-
-![](./preview.png)
 
 ## Usage
 
