@@ -1,5 +1,5 @@
 import { defineConfig } from "cva";
-import { DateTime } from "luxon";
+import { formatDistanceToNowStrict } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 export type { VariantProps } from "cva";
@@ -11,7 +11,7 @@ export const { cva, cx, compose } = defineConfig({
 });
 
 export function relativeTime(date: string) {
-  const dateTime = DateTime.fromISO(date);
-
-  return dateTime.toRelative();
+  return formatDistanceToNowStrict(date, {
+    addSuffix: true,
+  });
 }
