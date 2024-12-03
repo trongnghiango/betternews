@@ -12,7 +12,7 @@ export const verifyAuth = createMiddleware<Context>(async (c, next) => {
     throw new HTTPException(401, { message: "Unauthorized" });
   }
 
-  await next();
+  return await next();
 });
 
 export const validateAuthSession = createMiddleware<Context>(
@@ -22,7 +22,7 @@ export const validateAuthSession = createMiddleware<Context>(
       c.set("user", null);
       c.set("session", null);
 
-      return next();
+      return await next();
     }
 
     const { session, user } = await lucia.validateSession(sessionId);
